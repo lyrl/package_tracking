@@ -89,7 +89,7 @@ class PkgTrkComponentImpl(PkgTrkComponent):
 
             if com:
                 com = com.encode('utf-8')
-                msg = com + ' ' + str(tracking_no)
+                msg = '\n' + com + ' ' + str(tracking_no) + '\n'
 
             msg += '\n\n'.join(PkgTrkUtil.extract_trk_rec(trk_logs, 2))
 
@@ -146,7 +146,7 @@ class PkgTrkComponentImpl(PkgTrkComponent):
 
             if com:
                 com = com.encode('utf-8')
-                msg = com + ' ' + str(tracking_no)
+                msg = '\n' + com + ' ' + str(tracking_no) + '\n'
 
             if top3:
                 msg += '\n\n'.join(PkgTrkUtil.extract_trk_rec(trk_logs, 3))
