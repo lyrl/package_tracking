@@ -130,7 +130,8 @@ class PkgTrkComponentImpl(PkgTrkComponent):
 
         msg = ''
 
-        if kuai100_resp.has_key('data') and kuai100_resp['data'].has_key('info') and kuai100_resp['data']['info'].has_key('context'):
+        if PkgTrkUtil.isSuccess(kuai100_resp):
+        # if kuai100_resp.has_key('data') and kuai100_resp['data'].has_key('info') and kuai100_resp['data']['info'].has_key('context'):
             trk_logs = kuai100_resp['data']['info']['context']
 
             # 提取快递公司名称
@@ -176,7 +177,7 @@ class PkgTrkComponentImpl(PkgTrkComponent):
                 pkg.update_time = datetime.datetime.now()
                 pkg.save()
 
-            if traking_json.has_key('data') and traking_json['data'].has_key('info') and traking_json['data']['info'].has_key('context'):
+            if PkgTrkUtil.isSuccess(traking_json):
                 trk_info = traking_json['data']['info']['context']
 
                 time_stemp = trk_info[0]['time']
@@ -257,6 +258,13 @@ class PkgTrkUtil:
 
         return None
 
+    @classmethod
+    def isSuccess(cls, kuai100_resp):
+        if kuai100_resp.has_key('data') and kuai100_resp['data'].has_key('info'):
+            if kuai100_resp['data']['info']:
+                if kuai100_resp['data']['info'].has_key('context'):
+                    return True
+        return False
 
 class PkgTrkException(Exception):
     def __init__(self, msg):
