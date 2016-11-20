@@ -260,9 +260,9 @@ class PkgTrkUtil:
 
     @classmethod
     def isSuccess(cls, kuai100_resp):
-        if kuai100_resp.has_key('data') and kuai100_resp['data'].has_key('info'):
-            if kuai100_resp['data']['info']:
-                if kuai100_resp['data']['info'].has_key('context'):
+        if kuai100_resp.has_key('data') and kuai100_resp['data'] :
+            if kuai100_resp['data'].has_key('info') and kuai100_resp['data']['info']:
+                if kuai100_resp['data']['info'].has_key('context') and kuai100_resp['data']['info']['context']:
                     return True
         return False
 
