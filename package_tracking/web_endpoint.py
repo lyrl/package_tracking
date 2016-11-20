@@ -4,7 +4,14 @@
 import json
 import re
 import web
-from component.pkg_trk_component import PkgTrkComponentImpl
+import os
+import sys
+
+path = os.getcwd()
+if path not in sys.path:
+    sys.path.append(path)
+
+from package_tracking.component.pkg_trk_component import PkgTrkComponentImpl
 
 urls = (
   '/api/qq', 'index'
