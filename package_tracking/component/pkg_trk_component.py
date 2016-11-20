@@ -96,7 +96,7 @@ class PkgTrkComponentImpl(PkgTrkComponent):
             # 解析快递状态
             pkg_trk_record.package_status = PkgTrkUtil.parse_tracking_status(trk_logs)
 
-            if pkg_trk_record.package_status != model.STAUS_IN_DELIVERED:
+            if pkg_trk_record.package_status == model.STAUS_IN_DELIVERED:
                 msg = '当前快递是已签收状态，无法提供订阅服务！'
             else:
                 msg = '快递已订阅，将为您提供实时推送！'
@@ -244,9 +244,11 @@ class PkgTrkUtil:
         if trk_logs:
             for log in trk_logs:
                 desc = log['desc'].encode('utf-8')
+
                 if desc.find('已签收'):
                     return model.STAUS_IN_DELIVERED
-                if desc.find('派件中') or desc.find('正在派件') or desc.find('派送中'):
+
+                if desc.find('派件中') or desc.find('正在派件') :
                     return model.STAUS_IN_DELIVERING
 
         return model.STAUS_IN_TRANSIT
