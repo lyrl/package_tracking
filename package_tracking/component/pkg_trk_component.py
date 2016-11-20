@@ -76,8 +76,22 @@ class PkgTrkComponentImpl(PkgTrkComponent):
                 desc = log['desc'].encode('utf-8')
                 self.pkg_trk_repo.new_trk_log(pkg_trk_record, tracking_no, time, desc)
 
+            # 提取快递公司名称
+            com = PkgTrkUtil.extract_com(kuai100_resp)
 
-            msg = '\n'.join(PkgTrkUtil.extract_trk_rec(trk_logs, 1))
+            # 快递公司 快递单号
+            #
+            # 快递已经到达xxxxxx
+            #
+            # xxxxxxxxxxxxxxxxx
+            #
+            # xzxcdasdqweqweqweq
+
+            if com:
+                com = com.encode('utf-8')
+                msg = com + ' ' + str(tracking_no)
+
+            msg += '\n\n'.join(PkgTrkUtil.extract_trk_rec(trk_logs, 2))
 
             # 解析快递状态
             pkg_trk_record.package_status = PkgTrkUtil.parse_tracking_status(trk_logs)
