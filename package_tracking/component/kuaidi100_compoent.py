@@ -1,14 +1,12 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 # Created on 2016-07-26 11:04:34
-import datetime
 import json
 import urllib
 import urllib2
 from abc import ABCMeta, abstractmethod
 
 import util
-import package_tracking.component.model as model
 
 logger = util.get_logger("Kuaidi100")
 
@@ -57,7 +55,7 @@ class Kuaidi100ComponentImpl(Kuaidi100Component):
 
         resp = opener.open(trk_qry_api, encoded_data).read()
 
-        logger.debug("[Kuaidi100] - 返回信息 %s " % resp.encode('utf-8'))
+        logger.debug("[Kuaidi100] - 返回信息 %s " % resp)
 
         return json.loads(resp)
 
