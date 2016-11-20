@@ -94,7 +94,11 @@ class MoJoQQComponentImpl(MoJoQQComponent):
 
         encoded_data = urllib.urlencode(data)
 
-        resp = urllib2.urlopen(self.mojo_url + service_path, encoded_data).read()
+        try:
+            resp = urllib2.urlopen(self.mojo_url + service_path, encoded_data).read()
+        except Exception as e:
+            logger.debug("[MoJoQQ] - 发送qq消息失败正在重试 原因 %s " % e.message)
+            resp = urllib2.urlopen(self.mojo_url + service_path, encoded_data).read()
 
         logger.debug("[MoJoQQ] - 返回信息 %s " % resp)
 
