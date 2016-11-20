@@ -119,10 +119,26 @@ class PkgTrkComponentImpl(PkgTrkComponent):
         if kuai100_resp.has_key('data') and kuai100_resp['data'].has_key('info') and kuai100_resp['data']['info'].has_key('context'):
             trk_logs = kuai100_resp['data']['info']['context']
 
+            # 提取快递公司名称
+            com = PkgTrkUtil.extract_com(kuai100_resp)
+
+            # 快递公司 快递单号
+            #
+            # 快递已经到达xxxxxx
+            #
+            # xxxxxxxxxxxxxxxxx
+            #
+            # xzxcdasdqweqweqweq
+
+            if com:
+                com = com.encode('utf-8')
+                msg = com + ' ' + str(tracking_no)
+
             if top3:
-                msg = '\n'.join(PkgTrkUtil.extract_trk_rec(trk_logs, 3))
+                msg += '\n\n'.join(PkgTrkUtil.extract_trk_rec(trk_logs, 3))
             else:
-                msg = '\n'.join(PkgTrkUtil.extract_trk_rec(trk_logs, 100))
+                msg += '\n\n'.join(PkgTrkUtil.extract_trk_rec(trk_logs, 100))
+
         else:
             msg = '该单号暂无物流进展！'
 
@@ -140,11 +156,11 @@ class PkgTrkComponentImpl(PkgTrkComponent):
             logger.debug("[包裹追踪] - 开始更新 %s !" % str(pkg.tracking_no))
             traking_json = self.kuaidi100.query_trk_detail(pkg.tracking_no)
 
+            # 先更新快递公司名称
             if traking_json['data'].has_key('company'):
                 pkg.tracking_company_name = traking_json['data']['company']['fullname']
                 pkg.update_time = datetime.datetime.now()
                 pkg.save()
-
 
             if traking_json.has_key('data') and traking_json['data'].has_key('info') and traking_json['data']['info'].has_key('context'):
                 trk_info = traking_json['data']['info']['context']
@@ -219,6 +235,13 @@ class PkgTrkUtil:
                     return model.STAUS_IN_DELIVERING
 
         return model.STAUS_IN_TRANSIT
+
+    @classmethod
+    def extract_com(cls, kuai100_resp):
+        if kuai100_resp['data'].has_key('company'):
+            return kuai100_resp['data']['company']['fullname']
+
+        return None
 
 
 class PkgTrkException(Exception):
