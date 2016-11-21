@@ -53,11 +53,9 @@ class Kuaidi100ComponentImpl(Kuaidi100Component):
 
         encoded_data = urllib.urlencode(data)
 
-        resp = opener.open(trk_qry_api, encoded_data).read()
-
-        logger.debug("[Kuaidi100] - 返回信息 %s " % resp)
-
         try:
+            resp = opener.open(trk_qry_api, encoded_data).read()
+            logger.debug("[Kuaidi100] - 返回信息 %s " % resp)
             return json.loads(resp)
         except Exception as e:
             return None
