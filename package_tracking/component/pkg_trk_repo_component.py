@@ -22,7 +22,7 @@ class PkgTrkRepoComponent:
         pass
 
     @abstractmethod
-    def new_trk_log(self, package_tracking_obj, tracking_no, update_time, tracking_msg):
+    def new_trk_log(self, package_tracking_obj, tracking_no, update_time, tracking_msg, update_time_int):
         pass
 
 
@@ -103,7 +103,7 @@ class PkgTrkRepoComponentImpl(PkgTrkRepoComponent):
         pkg_track_log.traking_no = tracking_no
         pkg_track_log.tracking_msg = tracking_msg
         pkg_track_log.update_time = update_time
-        pkg_track_log.update_int = update_time_int
+        pkg_track_log.update_time_int = update_time_int
 
         try:
             pkg_track_log.save()
