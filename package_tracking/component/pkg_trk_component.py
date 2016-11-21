@@ -70,6 +70,11 @@ class PkgTrkComponentImpl(PkgTrkComponent):
 
         if result and result.count() > 0:
             msg = '您已经订阅了此快递动态，请勿重复订阅！'
+
+            for i in result:
+                if i.package_status == model.STAUS_IN_DELIVERED:
+                    msg = '当前快递是已签收状态，无法提供订阅服务！'
+
             self.mojo_qq.send_group_msg(qq_group_no, msg, qq_nike_name)
             return
 
