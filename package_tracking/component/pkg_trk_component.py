@@ -72,7 +72,10 @@ class PkgTrkComponentImpl(PkgTrkComponent):
         result = self.pkg_trk_repo.query(qq_nike_name, qq_no, qq_group_no, qq_group_name, tracking_no)
 
         print 'result:' + result
-        print 'result size:' + result.count()
+        print 'result size:' + str(result.count())
+
+        for i in result:
+            print i.id
 
         if result and result.count() > 0:
             msg = '您已经订阅了此快递动态，请勿重复订阅！'
