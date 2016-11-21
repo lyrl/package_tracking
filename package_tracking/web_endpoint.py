@@ -17,7 +17,7 @@ urls = (
   '/api/qq', 'index'
 )
 
-pkg_trk_comp = PkgTrkComponentImpl(create_table=False, mojoqq_host='192.168.1.84')
+pkg_trk_comp = PkgTrkComponentImpl(create_table=False, mojoqq_host='127.0.0.1')
 # pkg_trk_comp = PkgTrkComponentImpl(create_table=False, mojoqq_host='192.168.30.130')
 
 
