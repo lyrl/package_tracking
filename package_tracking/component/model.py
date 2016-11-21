@@ -43,3 +43,4 @@ class PackageTrackingDetail(BaseModel):
     traking_no = peewee.CharField(null=True)
     tracking_msg = peewee.CharField(null=True)
     update_time = peewee.DateTimeField(null=False)
+    update_int = peewee.IntegerField(null=False)

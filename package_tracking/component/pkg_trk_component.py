@@ -91,7 +91,7 @@ class PkgTrkComponentImpl(PkgTrkComponent):
             for log in trk_logs:
                 time = datetime.datetime.fromtimestamp(float(log['time']))
                 desc = log['desc'].encode('utf-8')
-                self.pkg_trk_repo.new_trk_log(pkg_trk_record, tracking_no, time, desc)
+                self.pkg_trk_repo.new_trk_log(pkg_trk_record, tracking_no, time, desc, int(log['time']))
 
             # 提取快递公司名称
             com = PkgTrkUtil.extract_company_name(kuai100_resp)
@@ -201,13 +201,9 @@ class PkgTrkComponentImpl(PkgTrkComponent):
                 trk_log_entiry = pkg.logs.order_by(SQL('update_time').desc())
 
                 for i in trk_log_entiry:
-                    print i.id
-                    tmp = (i.update_time - datetime.datetime(1970, 1, 1)).total_seconds()
-                    off = -(8 * 60 * 60)
-
-                    print 'tmp' + str(int(tmp+off))
+                    tmp = int(i.update_time_int)
                     if tmp > top_time:
-                        top_time = int(tmp+off)
+                        top_time = tmp
 
                 logger.debug('top_time' + str(top_time))
 
@@ -215,7 +211,7 @@ class PkgTrkComponentImpl(PkgTrkComponent):
                     if int(i['time']) > top_time:
                         time = datetime.datetime.fromtimestamp(float(i['time']))
                         desc = i['desc'].encode('utf-8')
-                        self.pkg_trk_repo.new_trk_log(pkg, pkg.tracking_no, time, desc)
+                        self.pkg_trk_repo.new_trk_log(pkg, pkg.tracking_no, time, desc, int(i['time']))
                         pkg.package_status = PkgTrkUtil.parse_tracking_status(trk_logs)
                         pkg.update_time = datetime.datetime.now()
                         pkg.save()
