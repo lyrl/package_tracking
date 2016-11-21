@@ -313,7 +313,7 @@ class PkgTrkUtil:
             for log in trk_logs:
                 desc = log['desc'].encode('utf-8')
 
-                if desc.find('已签收'):
+                if desc.find('已签收') and desc.find('投递并签收'):
                     return model.STAUS_IN_DELIVERED
 
                 if desc.find('派件中') or desc.find('正在派件') :
