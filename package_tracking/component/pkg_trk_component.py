@@ -164,7 +164,7 @@ class PkgTrkComponentImpl(PkgTrkComponent):
                 msg += '\n\n'.join(PkgTrkUtil.extract_trk_rec(trk_logs, 100))
 
         else:
-            msg = kuai100_resp['msg'].encode('utf-8')
+            msg = tracking_no + ' ' + kuai100_resp['msg'].encode('utf-8')
 
         self.mojo_qq.send_group_msg(str(qq_group_no), msg, qq_nike_name)
 
