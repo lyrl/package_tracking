@@ -416,6 +416,10 @@ class PkgTrkUtil:
            bool: 查询是否成功
         """
 
+        if not kuai100_resp:
+            return False
+
+
         if int(kuai100_resp['status']) != 0 or int(kuai100_resp['error_code']) != 0:
             return False
 

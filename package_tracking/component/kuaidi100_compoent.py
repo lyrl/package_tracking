@@ -57,7 +57,10 @@ class Kuaidi100ComponentImpl(Kuaidi100Component):
 
         logger.debug("[Kuaidi100] - 返回信息 %s " % resp)
 
-        return json.loads(resp)
+        try:
+            return json.loads(resp)
+        except Exception as e:
+            return None
 
 
 class Kuaidi100(Exception):
