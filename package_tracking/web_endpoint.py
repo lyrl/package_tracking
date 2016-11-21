@@ -34,7 +34,7 @@ class index:
             if req_json['content']:
                 content = req_json['content'].encode('utf-8')
 
-                if re.match('^查询快递 \d+$', content):
+                if re.match('^查询快递 \w+$', content):
                     pkg_trk_comp.qry_pkg_trk_msg(
                         req_json['sender'].encode('utf-8'),
                         str(req_json['sender_qq']),
@@ -43,22 +43,31 @@ class index:
                         str(content).replace('查询快递 ', ''),
                         True
                     )
-                if re.match('^查询快递详情 \d+$', content):
+                if re.match('^快递 \w+$', content):
                     pkg_trk_comp.qry_pkg_trk_msg(
                         req_json['sender'].encode('utf-8'),
                         str(req_json['sender_qq']),
                         str(req_json['gnumber']),
                         req_json['group'].encode('utf-8'),
-                        str(content).replace('查询快递详情 ', ''),
+                        str(content).replace('快递 ', ''),
+                        True
+                    )
+                if re.match('^快递详情 \w+$', content):
+                    pkg_trk_comp.qry_pkg_trk_msg(
+                        req_json['sender'].encode('utf-8'),
+                        str(req_json['sender_qq']),
+                        str(req_json['gnumber']),
+                        req_json['group'].encode('utf-8'),
+                        str(content).replace('快递详情 ', ''),
                         False
                     )
-                if re.match('^订阅快递状态 \d+$', content):
+                if re.match('^订阅快递 \w+$', content):
                     pkg_trk_comp.sub_pkg_trk_msg(
                         req_json['sender'].encode('utf-8'),
                         str(req_json['sender_qq']),
                         str(req_json['gnumber']),
                         req_json['group'].encode('utf-8'),
-                        str(content).replace('订阅快递状态 ', ''),
+                        str(content).replace('订阅快递 ', ''),
                         True
                     )
         else:
