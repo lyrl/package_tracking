@@ -68,6 +68,7 @@ class PkgTrkRepoComponentImpl(PkgTrkRepoComponent):
         pkg_track_info.qq_group_name = qq_group_name
         pkg_track_info.tracking_no = tracking_no
         pkg_track_info.update_time = datetime.datetime.now()
+        pkg_track_info.package_status = model.STAUS_WAIT_TAKING
 
         pkg_track_info.save()
 

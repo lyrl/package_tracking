@@ -68,13 +68,11 @@ class PkgTrkComponentImpl(PkgTrkComponent):
             self.mojo_qq.send_group_msg(qq_group_no, msg, qq_nike_name)
             return
 
-
         pkg_trk_record = self.pkg_trk_repo.new_pkg_trk_rec(qq_nike_name, qq_no, qq_group_no, qq_group_name, tracking_no)
 
         kuai100_resp = self.kuaidi100.query_trk_detail(tracking_no)
 
         msg = ''
-
 
         if PkgTrkUtil.check_kuai100_resp(kuai100_resp):
             trk_logs = kuai100_resp['data']['info']['context']
@@ -104,6 +102,8 @@ class PkgTrkComponentImpl(PkgTrkComponent):
 
             # 解析快递状态
             pkg_trk_record.package_status = PkgTrkUtil.parse_tracking_status(trk_logs)
+
+            print 'pkg_trk_record.package_status: ' ,  str(pkg_trk_record.package_status)
 
             if pkg_trk_record.package_status == model.STAUS_IN_DELIVERED:
                 msg = '当前快递是已签收状态，无法提供订阅服务！'
