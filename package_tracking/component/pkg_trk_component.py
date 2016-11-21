@@ -405,7 +405,7 @@ class PkgTrkUtil:
            bool: 查询是否成功
         """
 
-        if kuai100_resp['status'] != 0 or kuai100_resp['error_code'] != 0:
+        if int(kuai100_resp['status']) != 0 or int(kuai100_resp['error_code']) != 0:
             return False
 
         if kuai100_resp.has_key('data') and kuai100_resp['data'] :
