@@ -201,15 +201,15 @@ class PkgTrkComponentImpl(PkgTrkComponent):
                 trk_log_entiry = pkg.logs.order_by(SQL('update_time').desc())
 
                 for i in trk_log_entiry:
-                    # print i.id
+                    print i.id
                     tmp = (i.update_time - datetime.datetime(1970, 1, 1)).total_seconds()
                     off = (datetime.datetime.utcnow() - datetime.datetime.now()).total_seconds()
 
-                    # print 'tmp' + str(int(tmp+off))
+                    print 'tmp' + str(int(tmp+off))
                     if tmp > top_time:
                         top_time = int(tmp+off)
 
-                # logger.debug('top_time' + str(top_time))
+                logger.debug('top_time' + str(top_time))
 
                 for i in trk_logs:
                     if int(i['time']) > top_time:
