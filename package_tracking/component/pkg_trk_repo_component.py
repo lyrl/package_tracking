@@ -3,6 +3,7 @@
 # Created on 2016-07-26 11:04:34
 import datetime
 from abc import ABCMeta, abstractmethod
+import peewee
 
 import util
 import package_tracking.component.model as model
@@ -123,6 +124,33 @@ class PkgTrkRepoComponentImpl(PkgTrkRepoComponent):
         列出所有未签收的包裹
         """
         return model.PackageTrackingRecord.select().where(model.PackageTrackingRecord.package_status < 3)
+
+    def query(self, qq_nike_name, qq_no, qq_group_no, qq_group_name, tracking_no):
+        """
+        根据订阅者查询，如果有数据返回则不需要再次订阅
+
+
+        Args:
+            qq_nike_name (str): qq昵称
+            qq_no (str): qq号码
+            qq_group_no (str): qq群号
+            qq_group_name (str): qq群名称
+            tracking_no (str): 快递单号
+
+        Returns:
+            peewee.SelectQuery: 结果集
+        """
+
+
+
+        return model.PackageTrackingRecord.select().where(
+            (model.PackageTrackingRecord.qq_nick_name == qq_nike_name) &
+            (model.PackageTrackingRecord.qq_no == qq_no) &
+            (model.PackageTrackingRecord.qq_group_no == qq_group_no) &
+            (model.PackageTrackingRecord.qq_group_name == qq_group_name) &
+            (model.PackageTrackingRecord.tracking_no == tracking_no) &
+            (model.PackageTrackingRecord.package_status) != model.STAUS_IN_DELIVERED
+        )
 
 
 class PkgTrkRepoException(Exception):

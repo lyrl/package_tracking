@@ -67,6 +67,14 @@ class PkgTrkComponentImpl(PkgTrkComponent):
 
         msg = ''
 
+
+        #查询用户是否重复订阅
+        result = self.pkg_trk_repo.query(qq_nike_name, qq_no, qq_group_no, qq_group_name, tracking_no)
+
+        if result and result.count():
+            msg = '您已经订阅了此快递动态，请勿重复订阅！'
+            self.mojo_qq.send_group_msg(qq_group_no, msg, qq_nike_name)
+
         if PkgTrkUtil.check_kuai100_resp(kuai100_resp):
             trk_logs = kuai100_resp['data']['info']['context']
 
