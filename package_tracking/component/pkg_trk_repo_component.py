@@ -141,8 +141,6 @@ class PkgTrkRepoComponentImpl(PkgTrkRepoComponent):
             peewee.SelectQuery: 结果集
         """
 
-
-
         return model.PackageTrackingRecord.select().where(
             (model.PackageTrackingRecord.qq_nick_name == qq_nike_name) &
             (model.PackageTrackingRecord.qq_no == qq_no) &
