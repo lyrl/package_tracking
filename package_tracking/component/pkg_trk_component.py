@@ -203,7 +203,7 @@ class PkgTrkComponentImpl(PkgTrkComponent):
                 for i in trk_log_entiry:
                     print i.id
                     tmp = (i.update_time - datetime.datetime(1970, 1, 1)).total_seconds()
-                    off = (datetime.datetime.utcnow() - datetime.datetime.now()).total_seconds()
+                    off = -(8 * 60 * 60)
 
                     print 'tmp' + str(int(tmp+off))
                     if tmp > top_time:
