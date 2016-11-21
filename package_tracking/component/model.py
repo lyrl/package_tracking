@@ -5,10 +5,10 @@ import datetime
 import peewee
 deferred_db = peewee.SqliteDatabase(None)
 
-STAUS_WAIT_TAKING = 0
-STAUS_IN_TRANSIT = 1
-STAUS_IN_DELIVERING = 2
-STAUS_IN_DELIVERED = 3
+STAUS_WAIT_TAKING = 0 # 待揽件
+STAUS_IN_TRANSIT = 1 # 运输中
+STAUS_IN_DELIVERING = 2 # 派件中
+STAUS_IN_DELIVERED = 3 # 已签收
 
 
 class BaseModel(peewee.Model):

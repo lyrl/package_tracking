@@ -67,7 +67,7 @@ class PkgTrkComponentImpl(PkgTrkComponent):
 
         msg = ''
 
-        if kuai100_resp.has_key('data') and kuai100_resp['data'].has_key('info') and kuai100_resp['data']['info'].has_key('context'):
+        if PkgTrkUtil.check_kuai100_resp(kuai100_resp):
             trk_logs = kuai100_resp['data']['info']['context']
 
             # 存储快递跟踪信息到数据库
@@ -77,7 +77,7 @@ class PkgTrkComponentImpl(PkgTrkComponent):
                 self.pkg_trk_repo.new_trk_log(pkg_trk_record, tracking_no, time, desc)
 
             # 提取快递公司名称
-            com = PkgTrkUtil.extract_com(kuai100_resp)
+            com = PkgTrkUtil.extract_company_name(kuai100_resp)
 
             # 快递公司 快递单号
             #
@@ -130,12 +130,12 @@ class PkgTrkComponentImpl(PkgTrkComponent):
 
         msg = ''
 
-        if PkgTrkUtil.isSuccess(kuai100_resp):
+        if PkgTrkUtil.check_kuai100_resp(kuai100_resp):
         # if kuai100_resp.has_key('data') and kuai100_resp['data'].has_key('info') and kuai100_resp['data']['info'].has_key('context'):
             trk_logs = kuai100_resp['data']['info']['context']
 
             # 提取快递公司名称
-            com = PkgTrkUtil.extract_com(kuai100_resp)
+            com = PkgTrkUtil.extract_company_name(kuai100_resp)
 
             # 快递公司 快递单号
             #
@@ -155,7 +155,7 @@ class PkgTrkComponentImpl(PkgTrkComponent):
                 msg += '\n\n'.join(PkgTrkUtil.extract_trk_rec(trk_logs, 100))
 
         else:
-            msg = '该单号暂无物流进展！'
+            msg = kuai100_resp['msg'].encode('utf-8')
 
         self.mojo_qq.send_group_msg(str(qq_group_no), msg, qq_nike_name)
 
@@ -169,45 +169,40 @@ class PkgTrkComponentImpl(PkgTrkComponent):
 
         for pkg in all_in_transiting_pkgs:
             logger.debug("[包裹追踪] - 开始更新 %s !" % str(pkg.tracking_no))
-            traking_json = self.kuaidi100.query_trk_detail(pkg.tracking_no)
+            kuaidi100_resp = self.kuaidi100.query_trk_detail(pkg.tracking_no)
 
-            # 先更新快递公司名称
-            if traking_json['data'].has_key('company'):
-                pkg.tracking_company_name = traking_json['data']['company']['fullname']
-                pkg.update_time = datetime.datetime.now()
+            if PkgTrkUtil.check_kuai100_resp(kuaidi100_resp):
+                pkg.tracking_company_name = PkgTrkUtil.extract_company_name(kuaidi100_resp)
                 pkg.save()
 
-            if PkgTrkUtil.isSuccess(traking_json):
-                trk_info = traking_json['data']['info']['context']
+                trk_logs = kuaidi100_resp['data']['info']['context']
 
-                time_stemp = trk_info[0]['time']
-                logger.debug('time_stemp' + str(time_stemp))
                 top_time = 0
 
                 trk_log_entiry = pkg.logs.order_by(SQL('update_time').desc())
 
                 for i in trk_log_entiry:
-                    print i.id
+                    # print i.id
                     tmp = (i.update_time - datetime.datetime(1970, 1, 1)).total_seconds()
                     off = (datetime.datetime.utcnow() - datetime.datetime.now()).total_seconds()
 
-                    print 'tmp' + str(int(tmp+off))
+                    # print 'tmp' + str(int(tmp+off))
                     if tmp > top_time:
                         top_time = int(tmp+off)
 
-                logger.debug('top_time' + str(top_time))
+                # logger.debug('top_time' + str(top_time))
 
-                for i in trk_info:
+                for i in trk_logs:
                     if int(i['time']) > top_time:
                         time = datetime.datetime.fromtimestamp(float(i['time']))
                         desc = i['desc'].encode('utf-8')
                         self.pkg_trk_repo.new_trk_log(pkg, pkg.tracking_no, time, desc)
-                        pkg.package_status = PkgTrkUtil.parse_tracking_status(trk_info)
+                        pkg.package_status = PkgTrkUtil.parse_tracking_status(trk_logs)
                         pkg.update_time = datetime.datetime.now()
                         pkg.save()
                         logger.debug("[包裹追踪] - 最新更新信息 %s  %s !" % (str(pkg.tracking_no), desc))
 
-                        msg = '\n %s %s 快递状态更新!\n %s %s' % (
+                        msg = '\n\n %s %s 快递状态更新!\n\n %s %s' % (
                             pkg.tracking_company_name.encode('utf-8'),
                             pkg.tracking_no.encode('utf-8'),
                             time.strftime("%Y-%m-%d %H:%M:%S"),
@@ -231,6 +226,36 @@ class PkgTrkUtil:
     def extract_trk_rec(trk_logs, count=3):
         """
         获取快递记录前3条
+        Args:
+            trk_logs (list of dict): 快递更新状态
+
+            示例数据:
+            [
+                {
+                  "time": "1479458247",
+                  "desc": "派件已签收，签收人是PDA图片签收,签收网点是北京昌平回龙观公司,"
+                },
+                {
+                  "time": "1479427252",
+                  "desc": "北京昌平回龙观公司,的王士全,正在派件,扫描员回龙观观主,"
+                },
+                {
+                  "time": "1479423900",
+                  "desc": "快件到达北京昌平回龙观公司,上一站是北京分拨中心,扫描员华电大学,"
+                }
+            ]
+
+            count (int): 快递状态的前几条 默认 3
+
+        Returns:
+            list of str: 重新格式化的快递动态信息
+
+            示例：
+                [
+                  "2016-11-18 00:37:27 派件已签收，签收人是PDA图片签收,签收网点是北京昌平回龙观公司,"
+                  "2016-11-17 16:00:52 北京昌平回龙观公司,的王士全,正在派件,扫描员回龙观观主,"
+                  "2016-11-17 15:05:00 快件到达北京昌平回龙观公司,上一站是北京分拨中心,扫描员华电大学,"
+                ]
         """
         msg = []
 
@@ -241,6 +266,40 @@ class PkgTrkUtil:
 
     @staticmethod
     def parse_tracking_status(trk_logs):
+        """
+        根据快递更新记录解析快递当前的状态
+
+        Args:
+            trk_logs (list of dict): 快递更新状态
+
+            示例数据:
+            [
+                {
+                  "time": "1479458247",
+                  "desc": "派件已签收，签收人是PDA图片签收,签收网点是北京昌平回龙观公司,"
+                },
+                {
+                  "time": "1479427252",
+                  "desc": "北京昌平回龙观公司,的王士全,正在派件,扫描员回龙观观主,"
+                },
+                {
+                  "time": "1479423900",
+                  "desc": "快件到达北京昌平回龙观公司,上一站是北京分拨中心,扫描员华电大学,"
+                }
+            ]
+
+
+        Returns:
+            int: 快递状态
+
+
+            STAUS_WAIT_TAKING = 0 # 待揽件
+            STAUS_IN_TRANSIT = 1 # 运输中
+            STAUS_IN_DELIVERING = 2 # 派件中
+            STAUS_IN_DELIVERED = 3 # 已签收
+
+        """
+
         if trk_logs:
             for log in trk_logs:
                 desc = log['desc'].encode('utf-8')
@@ -254,19 +313,98 @@ class PkgTrkUtil:
         return model.STAUS_IN_TRANSIT
 
     @classmethod
-    def extract_com(cls, kuai100_resp):
+    def extract_company_name(cls, kuai100_resp):
+        """
+        从快递查询接口的返回信息中获取快递公司名称
+
+        Args:
+            kuai100_resp (dict): 快递100接口返回json数据对象
+
+            示例数据:
+            {
+              "msg": "",
+              "status": "0",
+              "error_code": "0",
+              "data": {
+                "info": {
+                  "status": "1",
+                  "com": "kuaijiesudi",
+                  "state": "3",
+                  "context": [
+                    {
+                      "time": "1479458247",
+                      "desc": "派件已签收，签收人是PDA图片签收,签收网点是北京昌平回龙观公司,"
+                    }
+                  ],
+                  "_source_com": ""
+                },
+                "com": "kuaijiesudi",
+                "company": {
+                  "url": "http://www.kuaidi100.com/all/kjkd.shtml?from=openv",
+                  "fullname": "快捷快递",
+                  "shortname": "快捷"
+                }
+              }
+            }
+
+
+        Returns:
+           str: 快递公司名称
+        """
+
         if kuai100_resp['data'].has_key('company'):
             return kuai100_resp['data']['company']['fullname']
 
         return None
 
     @classmethod
-    def isSuccess(cls, kuai100_resp):
+    def check_kuai100_resp(cls, kuai100_resp):
+        """
+        检查快递100返回报文，看查询是否成功
+
+
+        Args:
+            kuai100_resp (dict): 快递100接口返回json数据对象
+
+            示例数据:
+            {
+              "msg": "",
+              "status": "0",
+              "error_code": "0",
+              "data": {
+                "info": {
+                  "status": "1",
+                  "com": "kuaijiesudi",
+                  "state": "3",
+                  "context": [
+                    {
+                      "time": "1479458247",
+                      "desc": "派件已签收，签收人是PDA图片签收,签收网点是北京昌平回龙观公司,"
+                    }
+                  ],
+                  "_source_com": ""
+                },
+                "com": "kuaijiesudi",
+                "company": {
+                  "url": "http://www.kuaidi100.com/all/kjkd.shtml?from=openv",
+                  "fullname": "快捷快递",
+                  "shortname": "快捷"
+                }
+              }
+            }
+        Returns:
+           bool: 查询是否成功
+        """
+
+        if kuai100_resp['status'] != 0 or kuai100_resp['error_code'] != 0:
+            return False
+
         if kuai100_resp.has_key('data') and kuai100_resp['data'] :
             if kuai100_resp['data'].has_key('info') and kuai100_resp['data']['info']:
                 if kuai100_resp['data']['info'].has_key('context') and kuai100_resp['data']['info']['context']:
                     return True
         return False
+
 
 class PkgTrkException(Exception):
     def __init__(self, msg):
