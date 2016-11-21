@@ -33,32 +33,33 @@ class index:
         if req_json['type'] == 'group_message':
             if req_json['content']:
                 content = req_json['content'].encode('utf-8')
+                content = content.replace(' ', '')
 
-                if re.match('^快递 \w+$', content):
+                if re.match('^快递\w+$', content):
                     pkg_trk_comp.qry_pkg_trk_msg(
                         req_json['sender'].encode('utf-8'),
                         str(req_json['sender_qq']),
                         str(req_json['gnumber']),
                         req_json['group'].encode('utf-8'),
-                        str(content).replace('快递 ', ''),
+                        str(content).replace('快递', ''),
                         True
                     )
-                if re.match('^快递详情 \w+$', content):
+                if re.match('^快递详情\w+$', content):
                     pkg_trk_comp.qry_pkg_trk_msg(
                         req_json['sender'].encode('utf-8'),
                         str(req_json['sender_qq']),
                         str(req_json['gnumber']),
                         req_json['group'].encode('utf-8'),
-                        str(content).replace('快递详情 ', ''),
+                        str(content).replace('快递详情', ''),
                         False
                     )
-                if re.match('^订阅快递 \w+$', content):
+                if re.match('^快递跟踪\w+$', content):
                     pkg_trk_comp.sub_pkg_trk_msg(
                         req_json['sender'].encode('utf-8'),
                         str(req_json['sender_qq']),
                         str(req_json['gnumber']),
                         req_json['group'].encode('utf-8'),
-                        str(content).replace('订阅快递 ', ''),
+                        str(content).replace('快递跟踪', ''),
                         True
                     )
         else:
