@@ -143,12 +143,12 @@ class PkgTrkRepoComponentImpl(PkgTrkRepoComponent):
         """
 
         return model.PackageTrackingRecord.select().where(
-            (model.PackageTrackingRecord.qq_nick_name == qq_nike_name) &
-            (model.PackageTrackingRecord.qq_no == qq_no) &
-            (model.PackageTrackingRecord.qq_group_no == qq_group_no) &
-            (model.PackageTrackingRecord.qq_group_name == qq_group_name) &
-            (model.PackageTrackingRecord.tracking_no == tracking_no) &
-            (model.PackageTrackingRecord.package_status) != model.STAUS_IN_DELIVERED
+            (model.PackageTrackingRecord.qq_nick_name == str(qq_nike_name)) &
+            (model.PackageTrackingRecord.qq_no == str(qq_no)) &
+            (model.PackageTrackingRecord.qq_group_no == str(qq_group_no)) &
+            (model.PackageTrackingRecord.qq_group_name == str(qq_group_name)) &
+            (model.PackageTrackingRecord.tracking_no == str(tracking_no)) &
+            (model.PackageTrackingRecord.package_status != model.STAUS_IN_DELIVERED)
         )
 
 
