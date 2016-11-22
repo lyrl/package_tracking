@@ -58,7 +58,7 @@ class Kuaidi100ComponentImpl(Kuaidi100Component):
             return None
 
 
-class Kuaidi100(Exception):
+class Kuaidi100ComponentException(Exception):
     def __init__(self, msg):
         self.message = msg
 

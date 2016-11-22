@@ -433,7 +433,7 @@ class PkgTrkUtil:
         return False
 
 
-class PkgTrkException(Exception):
+class PackageTrackingComponentException(Exception):
     def __init__(self, msg):
         self.message = msg
 

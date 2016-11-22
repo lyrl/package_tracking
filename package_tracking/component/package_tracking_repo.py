@@ -152,7 +152,7 @@ class PackageTrackingRepoComponentImpl(PackageTrackingRepoComponent):
         )
 
 
-class PkgTrkRepoException(Exception):
+class PackageTrackingRepoComponentException(Exception):
     def __init__(self, msg):
         self.message = msg
 
