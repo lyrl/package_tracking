@@ -58,19 +58,17 @@ class MoJoQQComponentImpl(MoJoQQComponent):
             str: json
         """
         service_path = '/openqq/send_message'
-
         logger.debug("[MoJoQQ] - 发送消息到 qq %s 消息：%s " % (qq_no, msg))
 
-        data = {
+        encoded_data = urllib.urlencode({
             'qq': qq_no,
             'content': msg
-        }
-
-        encoded_data = urllib.urlencode(data)
-
-        resp = urllib2.urlopen(self.mojo_url + service_path, encoded_data).read()
-
-        logger.debug("[MoJoQQ] - 返回信息 %s " % resp)
+        })
+        try:
+            resp = urllib2.urlopen(self.mojo_url + service_path, encoded_data, timeout=10).read()
+            logger.debug("[MoJoQQ] - 返回信息 %s " % resp)
+        except Exception as e:
+            logger.error("[MoJoQQ] - 发送私人消息失败!")
 
     def send_group_msg(self, group_no, msg, mention):
         """
@@ -87,20 +85,16 @@ class MoJoQQComponentImpl(MoJoQQComponent):
 
         logger.debug("[MoJoQQ] - 发送消息到 qq群 %s 消息：%s 提到的人: %s " % (group_no, msg, mention))
 
-        data = {
+        encoded_data = urllib.urlencode({
             'gnumber': group_no,
             'content': '@'+mention+' '+msg if mention else msg
-        }
-
-        encoded_data = urllib.urlencode(data)
+        })
 
         try:
-            resp = urllib2.urlopen(self.mojo_url + service_path, encoded_data).read()
+            resp = urllib2.urlopen(self.mojo_url + service_path, encoded_data, timeout=10).read()
+            logger.debug("[MoJoQQ] - 返回信息 %s " % resp)
         except Exception as e:
-            logger.debug("[MoJoQQ] - 发送qq消息失败 %s " % e.message)
-            return
-
-        logger.debug("[MoJoQQ] - 返回信息 %s " % resp)
+            logger.error("[MoJoQQ] - 发送qq消息失败 %s " % e.message)
 
     def send_discuss_group_msg(self, discuss_id, msg, mention):
         """
@@ -117,17 +111,16 @@ class MoJoQQComponentImpl(MoJoQQComponent):
 
         logger.debug("[MoJoQQ] - 发送消息到 qq讨论组 %s 消息：%s 提到的人: %s".encode('utf-8') % (discuss_id, msg, mention))
 
-        data = {
+        encoded_data = urllib.urlencode({
             'did': discuss_id,
             'content': '@' + mention + ' ' + msg if mention else msg
-        }
+        })
 
-        encoded_data = urllib.urlencode(data)
-
-        resp = urllib2.urlopen(self.mojo_url + service_path, encoded_data).read()
-
-        logger.debug("[MoJoQQ] - 返回信息 %s " % resp)
-
+        try:
+            resp = urllib2.urlopen(self.mojo_url + service_path, encoded_data, timeout=10).read()
+            logger.debug("[MoJoQQ] - 返回信息 %s " % resp)
+        except Exception as e:
+            logger.error("[MoJoQQ] - 发送讨论组信息失败!")
 
 
 class MoJoQQException(Exception):
