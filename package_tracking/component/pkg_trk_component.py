@@ -3,6 +3,7 @@
 # Created on 2016-07-26 11:04:34
 import datetime
 from abc import ABCMeta, abstractmethod
+from multiprocessing import Process
 
 from peewee import SQL
 
@@ -75,7 +76,7 @@ class PkgTrkComponentImpl(PkgTrkComponent):
                 if i.package_status == model.STAUS_IN_DELIVERED:
                     msg = '当前快递是已签收状态，无法提供订阅服务！'
 
-            self.mojo_qq.send_group_msg(qq_group_no, msg, qq_nike_name)
+            self.send_async_group_msg(qq_group_no, msg, qq_nike_name)
             return
 
         pkg_trk_record = self.pkg_trk_repo.new_pkg_trk_rec(qq_nike_name, qq_no, qq_group_no, qq_group_name, tracking_no)
@@ -128,7 +129,7 @@ class PkgTrkComponentImpl(PkgTrkComponent):
         else:
             msg = '该单号暂无物流进展，有进展时会通过QQ群消息提醒!'
 
-        self.mojo_qq.send_group_msg(qq_group_no, msg, qq_nike_name)
+        self.send_async_group_msg(qq_group_no, msg, qq_nike_name)
 
     def qry_pkg_trk_msg(self, qq_nike_name, qq_no, qq_group_no, qq_group_name, tracking_no, top3):
         """
@@ -176,7 +177,7 @@ class PkgTrkComponentImpl(PkgTrkComponent):
         else:
             msg = tracking_no + ' ' + kuai100_resp['msg'].encode('utf-8')
 
-        self.mojo_qq.send_group_msg(str(qq_group_no), msg, qq_nike_name)
+        self.send_async_group_msg(str(qq_group_no), msg, qq_nike_name)
 
     def update_subscribed_package(self):
         """
@@ -224,12 +225,18 @@ class PkgTrkComponentImpl(PkgTrkComponent):
                             desc
                         )
 
-                        self.mojo_qq.send_group_msg(pkg.qq_group_no.encode('utf-8'), msg, pkg.qq_nick_name.encode('utf-8'))
+                        self.send_async_group_msg(pkg.qq_group_no.encode('utf-8'), msg, pkg.qq_nick_name.encode('utf-8'))
                         break
             else:
                 logger.debug("[包裹追踪] - 包裹 %s 没有任何更新!" % str(pkg.tracking_no))
 
         logger.debug("[包裹追踪] - 全部遍历完成等待60秒后再次遍历!")
+
+    def send_async_group_msg(self, qq_group_no, msg, qq_nike_name):
+        """
+        mojoqq信息采用异步方式发送
+        """
+        Process(target=self.mojo_qq.send_group_msg, args=(qq_group_no, msg, qq_nike_name,)).start()
 
 
 class PkgTrkUtil:
