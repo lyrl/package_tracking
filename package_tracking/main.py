@@ -10,7 +10,7 @@ path = os.getcwd()
 if path not in sys.path:
     sys.path.append(path)
 
-from package_tracking.component.pkg_trk_component import PkgTrkComponentImpl
+from package_tracking.component.package_tracking import PkgTrkComponentImpl
 
 if __name__ == '__main__':
     while True:

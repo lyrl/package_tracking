@@ -9,9 +9,9 @@ from peewee import SQL
 
 import model
 import util
-from kuaidi100_compoent import Kuaidi100ComponentImpl
-from mojo_qq_compoent import MoJoQQComponentImpl
-from pkg_trk_repo_component import PkgTrkRepoComponentImpl
+from kuaidi100 import Kuaidi100ComponentImpl
+from mojo_qq import MoJoQQComponentImpl
+from package_tracking_repo import PkgTrkRepoComponentImpl
 
 logger = util.get_logger("PackageTracking")
 

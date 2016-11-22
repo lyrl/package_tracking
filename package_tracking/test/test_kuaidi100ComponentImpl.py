@@ -3,7 +3,7 @@ from unittest import TestCase
 
 import datetime
 
-import package_tracking.component.kuaidi100_compoent as kuaidi100cmpt
+import package_tracking.component.kuaidi100 as kuaidi100cmpt
 
 class TestKuaidi100ComponentImpl(TestCase):
     def test_query_trk_detail(self):

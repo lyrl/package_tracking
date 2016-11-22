@@ -2,7 +2,7 @@
 # -*- encoding: utf-8 -*-
 # Created on 2016-07-26 11:04:34
 from unittest import TestCase
-import package_tracking.component.mojo_qq_compoent as mojo_component
+import package_tracking.component.mojo_qq as mojo_component
 
 class TestMoJoQQComponentImpl(TestCase):
     def test_send_qq_msg(self):

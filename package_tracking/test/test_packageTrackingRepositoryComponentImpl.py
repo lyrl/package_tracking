@@ -7,7 +7,7 @@ import datetime
 
 from peewee import SQL
 
-import package_tracking.component.pkg_trk_repo_component as repo
+import package_tracking.component.package_tracking_repo as repo
 
 
 class TestPackageTrackingRepositoryComponentImpl(TestCase):
