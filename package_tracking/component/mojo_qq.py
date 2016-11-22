@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 # Created on 2016-07-26 11:04:34
-import datetime
 import urllib
 import urllib2
 from abc import ABCMeta, abstractmethod
 
 import util
-import package_tracking.component.model as model
 
 logger = util.get_logger("MoJoQQ")
 
