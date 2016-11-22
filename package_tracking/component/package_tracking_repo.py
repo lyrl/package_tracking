@@ -4,10 +4,8 @@
 import datetime
 from abc import ABCMeta, abstractmethod
 import peewee
-
+import model
 import util
-import package_tracking.component.model as model
-
 logger = util.get_logger("PackageTrackingRecord")
 
 
