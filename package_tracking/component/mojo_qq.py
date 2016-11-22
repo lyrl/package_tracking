@@ -121,7 +121,7 @@ class MoJoQQComponentImpl(MoJoQQComponent):
             logger.error("[MoJoQQ] - 发送讨论组信息失败!")
 
 
-class MoJoQQException(Exception):
+class MoJoQQComponentException(Exception):
     def __init__(self, msg):
         self.message = msg
 
