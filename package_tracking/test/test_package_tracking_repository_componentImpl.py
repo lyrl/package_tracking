@@ -12,7 +12,7 @@ import package_tracking.component.package_tracking_repo as repo
 
 class TestPackageTrackingRepositoryComponentImpl(TestCase):
     def test_create_new_package_tracking_record(self):
-        package_tracking_repo = repo.PkgTrkRepoComponentImpl('./sqlite3.db', True)
+        package_tracking_repo = repo.PackageTrackingRepoComponentImpl('./sqlite3.db', True)
 
         tracking_info = package_tracking_repo.new_pkg_trk_rec(
             'lyrl',

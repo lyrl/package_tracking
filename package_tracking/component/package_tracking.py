@@ -11,12 +11,12 @@ import model
 import util
 from kuaidi100 import Kuaidi100ComponentImpl
 from mojo_qq import MoJoQQComponentImpl
-from package_tracking_repo import PkgTrkRepoComponentImpl
+from package_tracking_repo import PackageTrackingRepoComponentImpl
 
 logger = util.get_logger("PackageTracking")
 
 
-class PkgTrkComponent:
+class PackageTrackingComponent:
     def __init__(self):
         pass
 
@@ -31,7 +31,7 @@ class PkgTrkComponent:
         pass
 
 
-class PkgTrkComponentImpl(PkgTrkComponent):
+class PackageTrackingComponentImpl(PackageTrackingComponent):
     def __init__(self, db_path='./sqlite3.db', create_table=False, mojoqq_host='127.0.0.1', mojoqq_port='5000'):
         """
         包裹订阅查询实现
@@ -44,7 +44,7 @@ class PkgTrkComponentImpl(PkgTrkComponent):
         """
 
         self.mojo_qq = MoJoQQComponentImpl(mojoqq_host, mojoqq_port)
-        self.pkg_trk_repo = PkgTrkRepoComponentImpl(db_path, create_table)
+        self.pkg_trk_repo = PackageTrackingRepoComponentImpl(db_path, create_table)
         self.kuaidi100 = Kuaidi100ComponentImpl()
 
     def sub_pkg_trk_msg(self, qq_nike_name, qq_no, qq_group_no, qq_group_name, tracking_no, top3=True):

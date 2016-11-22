@@ -10,11 +10,11 @@ path = os.getcwd()
 if path not in sys.path:
     sys.path.append(path)
 
-from package_tracking.component.package_tracking import PkgTrkComponentImpl
+from package_tracking.component.package_tracking import PackageTrackingComponentImpl
 
 if __name__ == '__main__':
     while True:
-        package_tracking_impl = PkgTrkComponentImpl(mojoqq_host='127.0.0.1')
+        package_tracking_impl = PackageTrackingComponentImpl(mojoqq_host='127.0.0.1')
         package_tracking_impl.update_subscribed_package()
 
         time.sleep(60)

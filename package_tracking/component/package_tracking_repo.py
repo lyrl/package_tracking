@@ -11,7 +11,7 @@ import package_tracking.component.model as model
 logger = util.get_logger("PackageTrackingRecord")
 
 
-class PkgTrkRepoComponent:
+class PackageTrackingRepoComponent:
     def __init__(self):
         pass
 
@@ -26,7 +26,7 @@ class PkgTrkRepoComponent:
         pass
 
 
-class PkgTrkRepoComponentImpl(PkgTrkRepoComponent):
+class PackageTrackingRepoComponentImpl(PackageTrackingRepoComponent):
     def __init__(self, db_path, create_table=False):
         """
         pkgtrk 数据库访问层

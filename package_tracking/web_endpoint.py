@@ -11,14 +11,14 @@ path = os.getcwd()
 if path not in sys.path:
     sys.path.append(path)
 
-from package_tracking.component.package_tracking import PkgTrkComponentImpl
+from package_tracking.component.package_tracking import PackageTrackingComponentImpl
 
 urls = (
   '/api/qq', 'index'
 )
 
-pkg_trk_comp = PkgTrkComponentImpl(create_table=False, mojoqq_host='127.0.0.1')
-# pkg_trk_comp = PkgTrkComponentImpl(create_table=False, mojoqq_host='192.168.30.130')
+pkg_trk_comp = PackageTrackingComponentImpl(create_table=False, mojoqq_host='127.0.0.1')
+# pkg_trk_comp = PackageTrackingComponentImpl(create_table=False, mojoqq_host='192.168.30.130')
 
 
 class index:
