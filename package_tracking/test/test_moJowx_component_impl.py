@@ -4,6 +4,7 @@
 from unittest import TestCase
 from package_tracking.component.mojo_wx import MoJoWXComponentImpl
 
+
 class TestMoJoWXComponentImpl(TestCase):
     def test_send_msg(self):
         mojo_wx = MoJoWXComponentImpl('103.205.8.130')

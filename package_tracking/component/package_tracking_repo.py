@@ -40,7 +40,7 @@ class PackageTrackingRepoComponentImpl(PackageTrackingRepoComponent):
         try:
             model.deferred_db.connect()
         except Exception as e:
-            raise PkgTrkRepoException(u'数据库连接失败: ' + e.message)
+            raise PackageTrackingRepoComponentException(u'数据库连接失败: ' + e.message)
 
         if create_table:
             model.PackageTrackingRecord.create_table()
@@ -74,7 +74,7 @@ class PackageTrackingRepoComponentImpl(PackageTrackingRepoComponent):
             pkg_track_info.save()
         except Exception as e:
             logger.error("[数据库访问] - 保存包裹订阅信息失败 %s qq:%s tracking_no:%s" % (e.message, str(qq_no), str(tracking_no)))
-            raise PkgTrkRepoException("[数据库访问] - 保存包裹订阅信息失败")
+            raise PackageTrackingRepoComponentException("[数据库访问] - 保存包裹订阅信息失败")
 
         logger.debug("[数据库访问] - 保存包裹订阅信息成功 id:%s" % pkg_track_info.id)
 
@@ -107,7 +107,7 @@ class PackageTrackingRepoComponentImpl(PackageTrackingRepoComponent):
             pkg_track_log.save()
         except Exception as e:
             logger.error("[数据库访问] - 保存快递更新记录失败 %s 快递单号:%s" % (e.message, str(tracking_no)))
-            raise PkgTrkRepoException("[数据库访问] - 保存快递更新记录失败!")
+            raise PackageTrackingRepoComponentException("[数据库访问] - 保存快递更新记录失败!")
 
         logger.debug("[数据库访问] - 保存快递更新记录成功! 快递单号:%s" % (str(tracking_no)))
 

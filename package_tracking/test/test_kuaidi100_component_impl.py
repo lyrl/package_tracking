@@ -5,6 +5,7 @@ import datetime
 
 import package_tracking.component.kuaidi100 as kuaidi100cmpt
 
+
 class TestKuaidi100ComponentImpl(TestCase):
     def test_query_trk_detail(self):
         kuaidi100 = kuaidi100cmpt.Kuaidi100ComponentImpl()

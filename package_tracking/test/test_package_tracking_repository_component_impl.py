@@ -35,10 +35,8 @@ class TestPackageTrackingRepositoryComponentImpl(TestCase):
         all_trakcing = package_tracking_repo.list_all_package_tracking()
         all_trakcing = all_trakcing.order_by(SQL('update_time').desc())
 
-
         for i in all_trakcing:
             print i.qq_nick_name, i.qq_no, i.id, i.update_time
-
 
     def test_insert_new_tracking_log(self):
         pass

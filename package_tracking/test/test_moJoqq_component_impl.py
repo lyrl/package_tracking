@@ -4,6 +4,7 @@
 from unittest import TestCase
 import package_tracking.component.mojo_qq as mojo_component
 
+
 class TestMoJoQQComponentImpl(TestCase):
     def test_send_qq_msg(self):
         mojo_qq = mojo_component.MoJoQQComponentImpl('192.168.30.130', '5000')

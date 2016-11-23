@@ -13,7 +13,6 @@ def get_logger(name):
     except IndexError as i:
         pass
 
-
     handler = logging.StreamHandler()
     formater = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     handler.setFormatter(formater)
