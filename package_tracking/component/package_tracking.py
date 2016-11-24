@@ -66,22 +66,23 @@ class PackageTrackingComponentImpl(PackageTrackingComponent):
         #     model.PackageTrackingRecord: 跟踪记录
         """
         # 查询用户是否重复订阅
-        # result = self.pkg_trk_repo.query(suber_account, suber_nike_name, group_name, group_no, sub_type, sub_source, tracking_no)
-        #
-        # print result
-        #
-        # for i in result:
-        #     print i.id
-        #
-        # if result and result.count() > 0:
-        #     msg = '您已经订阅了此快递动态，请勿重复订阅！'
-        #
-        #     for i in result:
-        #         if i.package_status == model.STAUS_IN_DELIVERED:
-        #             msg = '当前快递是已签收状态，无法提供订阅服务！'
-        #
-        #     self.send_async_group_msg(qq_group_no, msg, qq_nike_name)
-        #     return
+        result = self.pkg_trk_repo.query(suber_account, suber_nike_name, group_name, group_no, sub_type, sub_source, tracking_no)
+
+        print result
+
+        for i in result:
+            print i.id
+
+        if result and result.count() > 0:
+            msg = '您已经订阅了此快递动态，请勿重复订阅！'
+
+            for i in result:
+                if i.package_status == model.STAUS_IN_DELIVERED:
+                    msg = '当前快递是已签收状态，无法提供订阅服务！'
+
+            self.send_msg(suber_account, suber_nike_name, group_name, group_no, sub_type, sub_source, tracking_no, True,
+                          msg)
+            return
 
         pkg_trk_record = self.pkg_trk_repo.new_pkg_trk_rec(suber_account, suber_nike_name, group_name, group_no, sub_type, sub_source, tracking_no)
 

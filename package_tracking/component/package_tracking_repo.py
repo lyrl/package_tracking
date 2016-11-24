@@ -132,30 +132,32 @@ class PackageTrackingRepoComponentImpl(PackageTrackingRepoComponent):
         """
         return model.PackageTrackingRecord.select().where(model.PackageTrackingRecord.package_status < 3)
 
-    def query(self, qq_nike_name, qq_no, qq_group_no, qq_group_name, tracking_no):
+    def query(self, suber_account, suber_nike_name, group_name, group_no, sub_type, sub_source, tracking_no):
         """
         根据订阅者查询，如果有数据返回则不需要再次订阅
 
 
         Args:
-            qq_nike_name (str): qq昵称
-            qq_no (str): qq号码
-            qq_group_no (str): qq群号
-            qq_group_name (str): qq群名称
+            suber_account (str): 订阅者账号
+            suber_nike_name (str): 订阅者昵称
+            group_name (str): 群组名
+            group_no (str): 群组号
+            sub_type (str): 私人信息，群组信息
+            sub_source (str): 订阅来源 qq wx
             tracking_no (str): 快递单号
-
         Returns:
             peewee.SelectQuery: 结果集
         """
 
         return model.PackageTrackingRecord.select().where(
-            (model.PackageTrackingRecord.qq_nick_name == str(qq_nike_name)) &
-            (model.PackageTrackingRecord.qq_no == str(qq_no)) &
-            (model.PackageTrackingRecord.qq_group_no == str(qq_group_no)) &
-            (model.PackageTrackingRecord.qq_group_name == str(qq_group_name)) &
-            (model.PackageTrackingRecord.tracking_no == str(tracking_no))
-            # &
-            # (model.PackageTrackingRecord.package_status != model.STAUS_IN_DELIVERED)
+            (model.PackageTrackingRecord.suber_account == str(suber_account)) &
+            (model.PackageTrackingRecord.suber_nike_name == str(suber_nike_name)) &
+            (model.PackageTrackingRecord.group_name == str(group_name)) &
+            (model.PackageTrackingRecord.group_no == str(group_no)) &
+            (model.PackageTrackingRecord.sub_type == str(sub_type)) &
+            (model.PackageTrackingRecord.sub_source == str(sub_source)) &
+            (model.PackageTrackingRecord.tracking_no == str(tracking_no)) &
+            (model.PackageTrackingRecord.package_status != model.STAUS_IN_DELIVERED)
         )
 
 
