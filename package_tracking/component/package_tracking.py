@@ -250,13 +250,13 @@ class PackageTrackingComponentImpl(PackageTrackingComponent):
 
         if sub_source == 'qq':
             if sub_type == 'friend':
-                self.mojo_qq.send_qq_msg(suber_account, msg)
+                self.mojo_qq.send_qq_msg(suber_account, msg[1:])
             elif sub_type == 'group':
                 msg = msg + '\n加好友可通过私聊推送，不错过快递更新！'
                 self.mojo_qq.send_group_msg(group_no, msg, suber_nike_name)
         elif sub_source == 'wx':
             if sub_type == 'friend':
-                self.mojo_wx.send_msg(suber_account, msg)
+                self.mojo_wx.send_msg(suber_account, msg[1:])
             elif sub_type == 'group':
                 msg = msg + '\n加好友可通过私聊推送，不错过快递更新！'
                 self.mojo_wx.send_group_msg(group_name, group_no, msg, suber_nike_name)
