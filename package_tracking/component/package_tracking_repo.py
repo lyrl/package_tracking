@@ -151,7 +151,7 @@ class PackageTrackingRepoComponentImpl(PackageTrackingRepoComponent):
 
         if sub_type == 'group':
 
-            if sub_type == 'wx':
+            if sub_source == 'wx':
                 return model.PackageTrackingRecord.select().where(
                     (model.PackageTrackingRecord.suber_nike_name == str(suber_nike_name)) &
                     (model.PackageTrackingRecord.group_name == str(group_name)) &
