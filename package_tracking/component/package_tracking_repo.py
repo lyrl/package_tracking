@@ -149,16 +149,26 @@ class PackageTrackingRepoComponentImpl(PackageTrackingRepoComponent):
             peewee.SelectQuery: 结果集
         """
 
-        return model.PackageTrackingRecord.select().where(
-            (model.PackageTrackingRecord.suber_account == str(suber_account)) &
-            (model.PackageTrackingRecord.suber_nike_name == str(suber_nike_name)) &
-            (model.PackageTrackingRecord.group_name == str(group_name)) &
-            (model.PackageTrackingRecord.group_no == str(group_no)) &
-            (model.PackageTrackingRecord.sub_type == str(sub_type)) &
-            (model.PackageTrackingRecord.sub_source == str(sub_source)) &
-            (model.PackageTrackingRecord.tracking_no == str(tracking_no)) &
-            (model.PackageTrackingRecord.package_status != model.STAUS_IN_DELIVERED)
-        )
+        if sub_type == 'group':
+            return model.PackageTrackingRecord.select().where(
+                (model.PackageTrackingRecord.suber_account == str(suber_account)) &
+                (model.PackageTrackingRecord.suber_nike_name == str(suber_nike_name)) &
+                (model.PackageTrackingRecord.group_name == str(group_name)) &
+                (model.PackageTrackingRecord.group_no == str(group_no)) &
+                (model.PackageTrackingRecord.sub_type == str(sub_type)) &
+                (model.PackageTrackingRecord.sub_source == str(sub_source)) &
+                (model.PackageTrackingRecord.tracking_no == str(tracking_no)) &
+                (model.PackageTrackingRecord.package_status != model.STAUS_IN_DELIVERED)
+            )
+        else:
+            return model.PackageTrackingRecord.select().where(
+                (model.PackageTrackingRecord.suber_account == str(suber_account)) &
+                (model.PackageTrackingRecord.suber_nike_name == str(suber_nike_name)) &
+                (model.PackageTrackingRecord.sub_type == str(sub_type)) &
+                (model.PackageTrackingRecord.sub_source == str(sub_source)) &
+                (model.PackageTrackingRecord.tracking_no == str(tracking_no)) &
+                (model.PackageTrackingRecord.package_status != model.STAUS_IN_DELIVERED)
+            )
 
 
 class PackageTrackingRepoComponentException(Exception):
