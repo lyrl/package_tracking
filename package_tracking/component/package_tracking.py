@@ -91,7 +91,10 @@ class PackageTrackingComponentImpl(PackageTrackingComponent):
                 self.pkg_trk_repo.save_new_tracking_log(package_tracking_record, tracking_no, time, desc, int(log['time']))
 
             # 提取快递公司名称
-            com = PkgTrkUtil.extract_company_name(kuai100_resp)
+            com = PkgTrkUtil.update_company_name(trk_logs, package_tracking_record)
+
+            # 解析快递状态
+            PkgTrkUtil.update_package_status(package_tracking_record, trk_logs)
 
             # 快递公司 快递单号
             #
@@ -106,12 +109,6 @@ class PackageTrackingComponentImpl(PackageTrackingComponent):
                 msg = '\n' + com + ' ' + str(tracking_no) + '\n'
 
             msg += '\n\n'.join(PkgTrkUtil.extract_trk_rec(trk_logs, 2))
-
-            # 解析快递状态
-            PkgTrkUtil.update_package_status(package_tracking_record, trk_logs)
-
-            # 更新快递公司名
-            PkgTrkUtil.update_company_name(trk_logs, package_tracking_record)
 
             if package_tracking_record.package_status == model.STAUS_IN_DELIVERED:
                 msg = '当前快递是已签收状态，无法提供订阅服务！'
