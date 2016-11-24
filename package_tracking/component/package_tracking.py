@@ -156,7 +156,7 @@ class PackageTrackingComponentImpl(PackageTrackingComponent):
 
             if com:
                 com = com.encode('utf-8')
-                msg = '\n' + com + ' ' + str(tracking_no) + '\n'
+                msg = '\n' + com + ' ' + str(tracking_no) + '\n\n'
 
             if brief:
                 msg += '\n\n'.join(PkgTrkUtil.extract_trk_rec(trk_logs, 2))
