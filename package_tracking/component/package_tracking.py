@@ -66,7 +66,7 @@ class PackageTrackingComponentImpl(PackageTrackingComponent):
         #     model.PackageTrackingRecord: 跟踪记录
         """
         # 查询用户是否重复订阅
-        result = self.pkg_trk_repo.query(suber_account, suber_nike_name, group_name, group_no, sub_type, sub_source, tracking_no)
+        # result = self.pkg_trk_repo.query(suber_account, suber_nike_name, group_name, group_no, sub_type, sub_source, tracking_no)
         #
         # print result
         #
