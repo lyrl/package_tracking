@@ -41,7 +41,7 @@ class QQ:
                         str(req_json['sender_qq']),
                         req_json['sender'].encode('utf-8'),
                         req_json['group'].encode('utf-8'),
-                        req_json['group_id'].encode('utf-8'),
+                        str(req_json['gnumber']),
                         'group',
                         'qq',
                         str(content).replace('快递', '')
@@ -51,7 +51,7 @@ class QQ:
                         str(req_json['sender_qq']),
                         req_json['sender'].encode('utf-8'),
                         req_json['group'].encode('utf-8'),
-                        req_json['group_id'].encode('utf-8'),
+                        str(req_json['gnumber']),
                         'group',
                         'qq',
                         str(content).replace('快递跟踪', ''))
