@@ -16,11 +16,11 @@ class PackageTrackingRepoComponent:
     __metaclass__ = ABCMeta
 
     @abstractmethod
-    def new_pkg_trk_rec(self, suber_account, suber_nike_name, group_name, group_no, sub_type, sub_source, tracking_no):
+    def save_new_package_tracking_record(self, suber_account, suber_nike_name, group_name, group_no, sub_type, sub_source, tracking_no):
         pass
 
     @abstractmethod
-    def new_trk_log(self, package_tracking_obj, tracking_no, update_time, tracking_msg, update_time_int):
+    def save_new_tracking_log(self, package_tracking_obj, tracking_no, update_time, tracking_msg, update_time_int):
         pass
 
 
@@ -48,7 +48,7 @@ class PackageTrackingRepoComponentImpl(PackageTrackingRepoComponent):
             if not model.PackageTrackingDetail.table_exists():
                 model.PackageTrackingDetail.create_table()
 
-    def new_pkg_trk_rec(self, suber_account, suber_nike_name, group_name, group_no, sub_type, sub_source, tracking_no):
+    def save_new_package_tracking_record(self, suber_account, suber_nike_name, group_name, group_no, sub_type, sub_source, tracking_no):
         """
         创建新的包裹查询订阅记录
 
@@ -87,7 +87,7 @@ class PackageTrackingRepoComponentImpl(PackageTrackingRepoComponent):
         logger.debug("[数据库访问] - 保存包裹订阅信息成功 id:%s" % pkg_track_info.id)
         return pkg_track_info
 
-    def new_trk_log(self, package_tracking_obj, tracking_no, update_time, tracking_msg, update_time_int):
+    def save_new_tracking_log(self, package_tracking_obj, tracking_no, update_time, tracking_msg, update_time_int):
         """
         保存快递单跟踪信息
 

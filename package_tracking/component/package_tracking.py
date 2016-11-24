@@ -65,27 +65,18 @@ class PackageTrackingComponentImpl(PackageTrackingComponent):
         # Returns:
         #     model.PackageTrackingRecord: 跟踪记录
         """
-        # 查询用户是否重复订阅
-        result = self.pkg_trk_repo.query(suber_account, suber_nike_name, group_name, group_no, sub_type, sub_source, tracking_no)
 
-        print result
-
-        for i in result:
-            print i.id
-
-        if result and result.count() > 0:
+        # 是否已经订阅
+        is_subscribed = PkgTrkUtil.is_subscribed(self, suber_account, suber_nike_name, group_name, group_no, sub_type, sub_source, tracking_no)
+        if is_subscribed:
             msg = '您已经订阅了此快递动态，请勿重复订阅！'
-
-            for i in result:
-                if i.package_status == model.STAUS_IN_DELIVERED:
-                    msg = '当前快递是已签收状态，无法提供订阅服务！'
-
-            self.send_msg(suber_account, suber_nike_name, group_name, group_no, sub_type, sub_source, tracking_no, True,
-                          msg)
+            self.send_msg(suber_account, suber_nike_name, group_name, group_no, sub_type, sub_source, msg)
             return
 
-        pkg_trk_record = self.pkg_trk_repo.new_pkg_trk_rec(suber_account, suber_nike_name, group_name, group_no, sub_type, sub_source, tracking_no)
+        # 保存新的订阅记录
+        package_tracking_record = self.pkg_trk_repo.save_new_package_tracking_record(suber_account, suber_nike_name, group_name, group_no, sub_type, sub_source, tracking_no)
 
+        # 查询快递自信状态
         kuai100_resp = self.kuaidi100.query_trk_detail(tracking_no)
 
         msg = ''
@@ -97,7 +88,7 @@ class PackageTrackingComponentImpl(PackageTrackingComponent):
             for log in trk_logs:
                 time = datetime.datetime.fromtimestamp(float(log['time']))
                 desc = log['desc'].encode('utf-8')
-                self.pkg_trk_repo.new_trk_log(pkg_trk_record, tracking_no, time, desc, int(log['time']))
+                self.pkg_trk_repo.save_new_tracking_log(package_tracking_record, tracking_no, time, desc, int(log['time']))
 
             # 提取快递公司名称
             com = PkgTrkUtil.extract_company_name(kuai100_resp)
@@ -117,24 +108,24 @@ class PackageTrackingComponentImpl(PackageTrackingComponent):
             msg += '\n\n'.join(PkgTrkUtil.extract_trk_rec(trk_logs, 2))
 
             # 解析快递状态
-            pkg_trk_record.package_status = PkgTrkUtil.parse_tracking_status(trk_logs)
+            package_tracking_record.package_status = PkgTrkUtil.parse_tracking_status(trk_logs)
 
-            print 'pkg_trk_record.package_status: ',  str(pkg_trk_record.package_status)
+            print 'package_tracking_record.package_status: ',  str(package_tracking_record.package_status)
 
-            if pkg_trk_record.package_status == model.STAUS_IN_DELIVERED:
+            if package_tracking_record.package_status == model.STAUS_IN_DELIVERED:
                 msg = '当前快递是已签收状态，无法提供订阅服务！'
             else:
                 msg = '快递已订阅，将为您提供实时推送！'
 
             # 更新快递公司名
             if kuai100_resp['data'].has_key('company'):
-                pkg_trk_record.company_name = kuai100_resp['data']['company']['fullname']
+                package_tracking_record.company_name = kuai100_resp['data']['company']['fullname']
 
-            pkg_trk_record.save()
+            package_tracking_record.save()
         else:
             msg = '该单号暂无物流进展，有进展时会通过QQ群消息提醒!'
 
-        self.send_msg(suber_account, suber_nike_name, group_name, group_no, sub_type, sub_source, tracking_no, True, msg)
+        self.send_async_msg(suber_account, suber_nike_name, group_name, group_no, sub_type, sub_source, msg)
 
     def qry_pkg_trk_msg(self, suber_account, suber_nike_name, group_name, group_no, sub_type, sub_source, tracking_no, brief=True):
         """
@@ -176,14 +167,14 @@ class PackageTrackingComponentImpl(PackageTrackingComponent):
                 msg = '\n' + com + ' ' + str(tracking_no) + '\n'
 
             if brief:
-                msg += '\n\n'.join(PkgTrkUtil.extract_trk_rec(trk_logs, 3))
+                msg += '\n\n'.join(PkgTrkUtil.extract_trk_rec(trk_logs, 2))
             else:
                 msg += '\n\n'.join(PkgTrkUtil.extract_trk_rec(trk_logs, 100))
 
         else:
             msg = tracking_no + ' ' + kuai100_resp['msg'].encode('utf-8')
 
-        self.send_msg(suber_account, suber_nike_name, group_name, group_no, sub_type, sub_source, tracking_no, brief, msg)
+        self.send_async_msg(suber_account, suber_nike_name, group_name, group_no, sub_type, sub_source, msg)
 
     def update_subscribed_package(self):
         """
@@ -193,59 +184,55 @@ class PackageTrackingComponentImpl(PackageTrackingComponent):
 
         all_in_transiting_pkgs = self.pkg_trk_repo.list_all_in_transiting_pkg()
 
-        for pkg in all_in_transiting_pkgs:
-            logger.debug("[包裹追踪] - 开始更新 %s !" % str(pkg.tracking_no))
-            kuaidi100_resp = self.kuaidi100.query_trk_detail(pkg.tracking_no)
+        for package in all_in_transiting_pkgs:
+            logger.debug("[包裹追踪] - 开始更新 %s !" % str(package.tracking_no))
+            kuaidi100_json = self.kuaidi100.query_trk_detail(package.tracking_no)
 
-            if PkgTrkUtil.check_kuai100_resp(kuaidi100_resp):
-                pkg.tracking_company_name = PkgTrkUtil.extract_company_name(kuaidi100_resp)
-                pkg.save()
-
-                trk_logs = kuaidi100_resp['data']['info']['context']
-
-                top_time = 0
-
-                trk_log_entiry = pkg.logs.order_by(SQL('update_time').desc())
-
-                for i in trk_log_entiry:
-                    tmp = int(i.update_time_int)
-                    if tmp > top_time:
-                        top_time = tmp
-
+            # 有快递动态信息
+            if PkgTrkUtil.check_kuai100_resp(kuaidi100_json):
+                # 更新快递公司名称
+                PkgTrkUtil.update_company_name(kuaidi100_json, package)
+                # 快递最后的更新时间，最新一条信息的时间
+                top_time = PkgTrkUtil.get_latest_update_time(package)
                 logger.debug('top_time' + str(top_time))
 
-                for i in trk_logs:
-                    if int(i['time']) > top_time:
-                        time = datetime.datetime.fromtimestamp(float(i['time']))
-                        desc = i['desc'].encode('utf-8')
-                        self.pkg_trk_repo.new_trk_log(pkg, pkg.tracking_no, time, desc, int(i['time']))
-                        pkg.package_status = PkgTrkUtil.parse_tracking_status(trk_logs)
-                        pkg.update_time = datetime.datetime.now()
-                        pkg.save()
-                        logger.debug("[包裹追踪] - 最新更新信息 %s  %s !" % (str(pkg.tracking_no), desc))
+                # 快递更新动态
+                tracking_logs = kuaidi100_json['data']['info']['context']
 
+                for log in tracking_logs:
+                    # 新的包裹动态更新
+                    if int(log['time']) > top_time:
+                        time = datetime.datetime.fromtimestamp(float(log['time']))
+                        desc = log['desc'].encode('utf-8')
+
+                        # 保存
+                        self.pkg_trk_repo.save_new_tracking_log(package, package.tracking_no, time, desc, int(log['time']))
+                        # 更新快递状态
+                        PkgTrkUtil.update_package_status(package, tracking_logs)
+                        logger.debug("[包裹追踪] - 最新更新信息 %s  %s !" % (str(package.tracking_no), desc))
+
+                        # 格式化推送信息
                         msg = '\n\n %s %s 快递状态更新!\n\n %s %s' % (
-                            pkg.tracking_company_name.encode('utf-8'),
-                            pkg.tracking_no.encode('utf-8'),
+                            package.tracking_company_name.encode('utf-8'),
+                            package.tracking_no.encode('utf-8'),
                             time.strftime("%Y-%m-%d %H:%M:%S"),
                             desc
                         )
 
-                        self.send_async_group_msg(pkg.qq_group_no.encode('utf-8'), msg, pkg.qq_nick_name.encode('utf-8'))
+                        self.send_async_msg(package.suber_account, package.suber_nike_name, package.group_name, package.group_no, package. sub_type, package.sub_source, msg)
                         break
             else:
-                logger.debug("[包裹追踪] - 包裹 %s 没有任何更新!" % str(pkg.tracking_no))
+                logger.debug("[包裹追踪] - 包裹 %s 没有任何更新!" % str(package.tracking_no))
 
         logger.debug("[包裹追踪] - 全部遍历完成等待60秒后再次遍历!")
 
-    def send_async_group_msg(self, qq_group_no, msg, qq_nike_name):
+    def send_async_msg(self, suber_account, suber_nike_name, group_name, group_no, sub_type, sub_source, msg):
         """
         mojoqq信息采用异步方式发送
         """
-        Process(target=self.mojo_qq.send_group_msg, args=(qq_group_no, msg, qq_nike_name,)).start()
+        Process(target=self.send_msg, args=(suber_account, suber_nike_name, group_name, group_no, sub_type, sub_source, msg,)).start()
 
-    def send_msg(self, suber_account, suber_nike_name, group_name, group_no, sub_type, sub_source, tracking_no, brief,
-                 msg):
+    def send_msg(self, suber_account, suber_nike_name, group_name, group_no, sub_type, sub_source, msg):
         """
         查询快递最新状态
 
@@ -256,8 +243,6 @@ class PackageTrackingComponentImpl(PackageTrackingComponent):
             group_no (str): 群组号
             sub_type (str): 私人信息，群组信息
             sub_source (str): 订阅来源 qq wx
-            tracking_no (str): 快递单号
-            brief (bool): 是否只发送前3条信息
             msg (str): 消息
         pass
         """
@@ -465,6 +450,46 @@ class PkgTrkUtil:
                 if kuai100_resp['data']['info'].has_key('context') and kuai100_resp['data']['info']['context']:
                     return True
         return False
+
+    @staticmethod
+    def get_latest_update_time(package_tracking_record):
+        """
+        获得快递最新动态更新时间
+        """
+        top_time = 0
+
+        trk_log_entiry = package_tracking_record.logs.order_by(SQL('update_time').desc())
+        for i in trk_log_entiry:
+            tmp = int(i.update_time_int)
+            if tmp > top_time:
+                top_time = tmp
+        return top_time
+
+    @staticmethod
+    def update_company_name(kuaidi100_resp, package_tracking_record):
+        """
+        更新快递公司名称
+        """
+        package_tracking_record.tracking_company_name = PkgTrkUtil.extract_company_name(kuaidi100_resp)
+        package_tracking_record.save()
+        return package_tracking_record.tracking_company_name
+
+    @staticmethod
+    def update_package_status(package, tracking_logs):
+        package.package_status = PkgTrkUtil.parse_tracking_status(tracking_logs)
+        package.update_time = datetime.datetime.now()
+        package.save()
+
+    @classmethod
+    def is_subscribed(cls, suber_account, suber_nike_name, group_name, group_no, sub_type, sub_source, tracking_no):
+        # 查询用户是否重复订阅
+        results = cls.pkg_trk_repo.query(suber_account, suber_nike_name, group_name, group_no, sub_type, sub_source,tracking_no)
+
+        if results and results.count() > 0:
+            return True
+
+        return False
+
 
 class PackageTrackingComponentException(Exception):
     def __init__(self, msg):

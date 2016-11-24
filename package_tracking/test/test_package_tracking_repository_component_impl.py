@@ -14,7 +14,7 @@ class TestPackageTrackingRepositoryComponentImpl(TestCase):
     def test_create_new_package_tracking_record(self):
         package_tracking_repo = repo.PackageTrackingRepoComponentImpl('./sqlite3.db', True)
 
-        tracking_info = package_tracking_repo.new_pkg_trk_rec(
+        tracking_info = package_tracking_repo.save_new_package_tracking_record(
             'lyrl',
             '184387904',
             '498880156',
@@ -22,10 +22,10 @@ class TestPackageTrackingRepositoryComponentImpl(TestCase):
             '45457874545454'
         )
 
-        package_tracking_repo.new_trk_log(tracking_info, tracking_info.tracking_no, datetime.datetime.now(), None, '已发货')
-        package_tracking_repo.new_trk_log(tracking_info, tracking_info.tracking_no, datetime.datetime.now(), None, '已发货')
-        package_tracking_repo.new_trk_log(tracking_info, tracking_info.tracking_no, datetime.datetime.now(), None, '已发货')
-        package_tracking_repo.new_trk_log(tracking_info, tracking_info.tracking_no, datetime.datetime.now(), None, '已发货')
+        package_tracking_repo.save_new_tracking_log(tracking_info, tracking_info.tracking_no, datetime.datetime.now(), None, '已发货')
+        package_tracking_repo.save_new_tracking_log(tracking_info, tracking_info.tracking_no, datetime.datetime.now(), None, '已发货')
+        package_tracking_repo.save_new_tracking_log(tracking_info, tracking_info.tracking_no, datetime.datetime.now(), None, '已发货')
+        package_tracking_repo.save_new_tracking_log(tracking_info, tracking_info.tracking_no, datetime.datetime.now(), None, '已发货')
 
         logs = tracking_info.logs
 
