@@ -11,6 +11,7 @@ import model
 import util
 from kuaidi100 import Kuaidi100ComponentImpl
 from mojo_qq import MoJoQQComponentImpl
+from mojo_wx import MoJoWXComponentImpl
 from package_tracking_repo import PackageTrackingRepoComponentImpl
 
 logger = util.get_logger("PackageTracking")
@@ -23,16 +24,16 @@ class PackageTrackingComponent:
     __metaclass__ = ABCMeta
 
     @abstractmethod
-    def sub_pkg_trk_msg(self, qq_nike_name, qq_no, qq_group_no, qq_group_name, tracking_no, top3):
+    def sub_pkg_trk_msg(self, suber_account, suber_nike_name, group_name, group_no, sub_type, sub_source, tracking_no):
         pass
 
     @abstractmethod
-    def qry_pkg_trk_msg(self, qq_nike_name, qq_no, qq_group_no, qq_group_name, tracking_no, top3):
+    def qry_pkg_trk_msg(self, suber_account, suber_nike_name, group_name, group_no, sub_type, sub_source, tracking_no, brief=True):
         pass
 
 
 class PackageTrackingComponentImpl(PackageTrackingComponent):
-    def __init__(self, db_path='./sqlite3.db', create_table=False, mojoqq_host='127.0.0.1', mojoqq_port='5000'):
+    def __init__(self, db_path='./sqlite3.db', create_table=False, mojoqq_host='127.0.0.1', mojoqq_port='5000', mojowx_host='127.0.0.1', mojowx_port='3000'):
         """
         包裹订阅查询实现
 
@@ -41,45 +42,48 @@ class PackageTrackingComponentImpl(PackageTrackingComponent):
             create_table (bool): 是否需要自动创建表
             mojoqq_host (str): mojoqq ip
             mojoqq_port (str): mojoqq 端口
+            mojowx_host (str): mojowx ip
+            mojowx_port (str): mojowx 端口
         """
-
+        self.mojo_wx = MoJoWXComponentImpl(mojowx_host, mojowx_port)
         self.mojo_qq = MoJoQQComponentImpl(mojoqq_host, mojoqq_port)
         self.pkg_trk_repo = PackageTrackingRepoComponentImpl(db_path, create_table)
         self.kuaidi100 = Kuaidi100ComponentImpl()
 
-    def sub_pkg_trk_msg(self, qq_nike_name, qq_no, qq_group_no, qq_group_name, tracking_no, top3=True):
+    def sub_pkg_trk_msg(self, suber_account, suber_nike_name, group_name, group_no, sub_type, sub_source, tracking_no):
         """
         订阅包裹更新状态
 
         Args:
-            qq_nike_name (str): 订阅者qq昵称
-            qq_no (str): 订阅者qq号
-            qq_group_no (str): 订阅者所在群号
-            qq_group_name (str): 订阅者所在群名
-            tracking_no (str): 快递单号、包裹单号
-            top3 (bool): 是否只取最新的三条动态
+            suber_account (str): 订阅者账号
+            suber_nike_name (str): 订阅者昵称
+            group_name (str): 群组名
+            group_no (str): 群组号
+            sub_type (str): 私人信息，群组信息
+            sub_source (str): 订阅来源 qq wx
+            tracking_no (str): 快递单号
         # Returns:
         #     model.PackageTrackingRecord: 跟踪记录
         """
         # 查询用户是否重复订阅
-        result = self.pkg_trk_repo.query(qq_nike_name, qq_no, qq_group_no, qq_group_name, tracking_no)
+        # result = self.pkg_trk_repo.query(qq_nike_name, qq_no, qq_group_no, qq_group_name, tracking_no)
+        #
+        # print result
+        #
+        # for i in result:
+        #     print i.id
+        #
+        # if result and result.count() > 0:
+        #     msg = '您已经订阅了此快递动态，请勿重复订阅！'
+        #
+        #     for i in result:
+        #         if i.package_status == model.STAUS_IN_DELIVERED:
+        #             msg = '当前快递是已签收状态，无法提供订阅服务！'
+        #
+        #     self.send_async_group_msg(qq_group_no, msg, qq_nike_name)
+        #     return
 
-        print result
-
-        for i in result:
-            print i.id
-
-        if result and result.count() > 0:
-            msg = '您已经订阅了此快递动态，请勿重复订阅！'
-
-            for i in result:
-                if i.package_status == model.STAUS_IN_DELIVERED:
-                    msg = '当前快递是已签收状态，无法提供订阅服务！'
-
-            self.send_async_group_msg(qq_group_no, msg, qq_nike_name)
-            return
-
-        pkg_trk_record = self.pkg_trk_repo.new_pkg_trk_rec(qq_nike_name, qq_no, qq_group_no, qq_group_name, tracking_no)
+        pkg_trk_record = self.pkg_trk_repo.new_pkg_trk_rec(suber_account, suber_nike_name, group_name, group_no, sub_type, sub_source, tracking_no)
 
         kuai100_resp = self.kuaidi100.query_trk_detail(tracking_no)
 
@@ -123,25 +127,27 @@ class PackageTrackingComponentImpl(PackageTrackingComponent):
 
             # 更新快递公司名
             if kuai100_resp['data'].has_key('company'):
-                pkg_trk_record.tracking_company_name = kuai100_resp['data']['company']['fullname']
+                pkg_trk_record.company_name = kuai100_resp['data']['company']['fullname']
 
             pkg_trk_record.save()
         else:
             msg = '该单号暂无物流进展，有进展时会通过QQ群消息提醒!'
 
-        self.send_async_group_msg(qq_group_no, msg, qq_nike_name)
+        # self.send_async_group_msg(qq_group_no, msg, qq_nike_name)
 
-    def qry_pkg_trk_msg(self, qq_nike_name, qq_no, qq_group_no, qq_group_name, tracking_no, top3):
+    def qry_pkg_trk_msg(self, suber_account, suber_nike_name, group_name, group_no, sub_type, sub_source, tracking_no, brief=True):
         """
         查询快递最新状态
 
         Args:
-            qq_nike_name (str): 订阅者qq昵称
-            qq_no (str): 订阅者qq号
-            qq_group_no (str): 订阅者所在群号
-            qq_group_name (str): 订阅者所在群名
-            tracking_no (str): 快递单号、包裹单号
-            top3 (bool): 是否只取最新的三条动态
+            suber_account (str): 订阅者账号
+            suber_nike_name (str): 订阅者昵称
+            group_name (str): 群组名
+            group_no (str): 群组号
+            sub_type (str): 私人信息，群组信息
+            sub_source (str): 订阅来源 qq wx
+            tracking_no (str): 快递单号
+            brief (bool): 是否只发送前3条信息
         # Returns:
         #     model.PackageTrackingRecord: 跟踪记录
         """
@@ -151,7 +157,6 @@ class PackageTrackingComponentImpl(PackageTrackingComponent):
         msg = ''
 
         if PkgTrkUtil.check_kuai100_resp(kuai100_resp):
-        # if kuai100_resp.has_key('data') and kuai100_resp['data'].has_key('info') and kuai100_resp['data']['info'].has_key('context'):
             trk_logs = kuai100_resp['data']['info']['context']
 
             # 提取快递公司名称
@@ -169,7 +174,7 @@ class PackageTrackingComponentImpl(PackageTrackingComponent):
                 com = com.encode('utf-8')
                 msg = '\n' + com + ' ' + str(tracking_no) + '\n'
 
-            if top3:
+            if brief:
                 msg += '\n\n'.join(PkgTrkUtil.extract_trk_rec(trk_logs, 3))
             else:
                 msg += '\n\n'.join(PkgTrkUtil.extract_trk_rec(trk_logs, 100))
@@ -177,7 +182,14 @@ class PackageTrackingComponentImpl(PackageTrackingComponent):
         else:
             msg = tracking_no + ' ' + kuai100_resp['msg'].encode('utf-8')
 
-        self.send_async_group_msg(str(qq_group_no), msg, qq_nike_name)
+
+        # if sub_source == 'qq':
+        #     self.send_async_group_msg(str(qq_group_no), msg, qq_nike_name)
+        # else:
+        #     self.send_async_group_msg(str(qq_group_no), msg, qq_nike_name)
+
+
+        PkgTrkUtil.send_msg(suber_account, suber_nike_name, group_name, group_no, sub_type, sub_source, tracking_no, brief, msg)
 
     def update_subscribed_package(self):
         """
@@ -237,6 +249,35 @@ class PackageTrackingComponentImpl(PackageTrackingComponent):
         mojoqq信息采用异步方式发送
         """
         Process(target=self.mojo_qq.send_group_msg, args=(qq_group_no, msg, qq_nike_name,)).start()
+
+    def send_msg(self, suber_account, suber_nike_name, group_name, group_no, sub_type, sub_source, tracking_no, brief,
+                 msg):
+        """
+        查询快递最新状态
+
+        Args:
+            suber_account (str): 订阅者账号
+            suber_nike_name (str): 订阅者昵称
+            group_name (str): 群组名
+            group_no (str): 群组号
+            sub_type (str): 私人信息，群组信息
+            sub_source (str): 订阅来源 qq wx
+            tracking_no (str): 快递单号
+            brief (bool): 是否只发送前3条信息
+            msg (str): 消息
+        pass
+        """
+
+        if sub_source == 'qq':
+            if sub_type == 'friend':
+                self.mojo_qq.send_qq_msg(suber_account, msg)
+            elif sub_type == 'group':
+                self.mojo_qq.send_group_msg(group_no, msg, suber_nike_name)
+        elif sub_source == 'wx':
+            if sub_type == 'friend':
+                self.mojo_wx.send_msg(suber_account, msg)
+            elif sub_type == 'group':
+                self.mojo_wx.send_group_msg(group_name, msg, suber_nike_name)
 
 
 class PkgTrkUtil:
@@ -430,7 +471,6 @@ class PkgTrkUtil:
                 if kuai100_resp['data']['info'].has_key('context') and kuai100_resp['data']['info']['context']:
                     return True
         return False
-
 
 class PackageTrackingComponentException(Exception):
     def __init__(self, msg):

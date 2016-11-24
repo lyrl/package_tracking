@@ -8,7 +8,7 @@ from package_tracking.component.mojo_wx import MoJoWXComponentImpl
 class TestMoJoWXComponentImpl(TestCase):
     def test_send_msg(self):
         mojo_wx = MoJoWXComponentImpl('103.205.8.130')
-        mojo_wx.send_msg('ziyuzan124', '你好')
+        mojo_wx.send_msg('ziyuzan124', 'test')
 
     def test_send_group_msg(self):
         self.fail()

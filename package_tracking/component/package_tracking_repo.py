@@ -16,7 +16,7 @@ class PackageTrackingRepoComponent:
     __metaclass__ = ABCMeta
 
     @abstractmethod
-    def new_pkg_trk_rec(self, qq_nike_name, qq_no, qq_group_no, qq_group_name, tracking_no):
+    def new_pkg_trk_rec(self, suber_account, suber_nike_name, group_name, group_no, sub_type, sub_source, tracking_no):
         pass
 
     @abstractmethod
@@ -40,31 +40,38 @@ class PackageTrackingRepoComponentImpl(PackageTrackingRepoComponent):
         try:
             model.deferred_db.connect()
         except Exception as e:
-            raise PackageTrackingRepoComponentException(u'数据库连接失败: ' + e.message)
+            raise PackageTrackingRepoComponentException('数据库连接失败: ' + e.message)
 
         if create_table:
-            model.PackageTrackingRecord.create_table()
-            model.PackageTrackingDetail.create_table()
+            if not model.PackageTrackingRecord.table_exists():
+                model.PackageTrackingRecord.create_table()
+            if not model.PackageTrackingDetail.table_exists():
+                model.PackageTrackingDetail.create_table()
 
-    def new_pkg_trk_rec(self, qq_nike_name, qq_no, qq_group_no, qq_group_name, tracking_no):
+    def new_pkg_trk_rec(self, suber_account, suber_nike_name, group_name, group_no, sub_type, sub_source, tracking_no):
         """
         创建新的包裹查询订阅记录
 
         Args:
-            qq_nike_name (str): 订阅者qq昵称
-            qq_no (str): 订阅者qq号
-            qq_group_no (str): 订阅者所在群号
-            qq_group_name (str): 订阅者所在群名
-            tracking_no (str): 快递单号、包裹单号
+            suber_account (str): 订阅者账号
+            suber_nike_name (str): 订阅者昵称
+            group_name (str): 群组名
+            group_no (str): 群组号
+            sub_type (str): 私人信息，群组信息
+            sub_source (str): 订阅来源 qq wx
+            tracking_no (str): 快递单号
         Returns:
             model.PackageTrackingRecord: 跟踪记录
         """
         pkg_track_info = model.PackageTrackingRecord()
-        pkg_track_info.qq_nick_name = qq_nike_name
-        pkg_track_info.qq_no = qq_no
-        pkg_track_info.qq_group_no = qq_group_no
-        pkg_track_info.qq_group_name = qq_group_name
+
+        pkg_track_info.suber_account = suber_account
+        pkg_track_info.group_name = group_name
+        pkg_track_info.group_no = group_no
+        pkg_track_info.sub_type = sub_type
+        pkg_track_info.sub_source = sub_source
         pkg_track_info.tracking_no = tracking_no
+
         pkg_track_info.update_time = datetime.datetime.now()
         pkg_track_info.package_status = model.STAUS_WAIT_TAKING
 
@@ -77,7 +84,6 @@ class PackageTrackingRepoComponentImpl(PackageTrackingRepoComponent):
             raise PackageTrackingRepoComponentException("[数据库访问] - 保存包裹订阅信息失败")
 
         logger.debug("[数据库访问] - 保存包裹订阅信息成功 id:%s" % pkg_track_info.id)
-
         return pkg_track_info
 
     def new_trk_log(self, package_tracking_obj, tracking_no, update_time, tracking_msg, update_time_int):

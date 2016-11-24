@@ -17,18 +17,22 @@ class BaseModel(peewee.Model):
 
 
 class PackageTrackingRecord(BaseModel):
-    # qq昵称
-    qq_nick_name = peewee.CharField(null=False)
-    # qq号
-    qq_no = peewee.CharField(null=False)
-    # 订阅的群
-    qq_group_no = peewee.CharField(null=True)
-    # 订阅的群号
-    qq_group_name = peewee.CharField(null=True)
-    # 快递单号
-    tracking_no = peewee.CharField(null=False)
-    # 快递公司
-    tracking_company_name = peewee.CharField(null=True)
+    # 订阅类型 群、私人信息 group friend
+    sub_type = peewee.CharField(null=False)
+    # 订阅来源 微信、QQ   wx qq
+    sub_source = peewee.CharField(null=False)
+    # 群组名
+    group_name = peewee.CharField(null=False)
+    # 群组号码
+    group_no = peewee.CharField(null=True)
+    # 订阅者账号
+    suber_account = peewee.CharField(null=False)
+    # 订阅者昵称
+    suber_nike_name = peewee.CharField(null=False)
+    # 包裹号码
+    tracking_no = peewee.CharField(null=True)
+    # 快递公司名称
+    company_name = peewee.CharField(null=True)
     # 当前状态 0 待揽收 1 运输中 2 派送中 3 已签收
     package_status = peewee.IntegerField(null=False, default=0)
 
@@ -40,7 +44,7 @@ class PackageTrackingRecord(BaseModel):
 
 class PackageTrackingDetail(BaseModel):
     package_tracking = peewee.ForeignKeyField(PackageTrackingRecord, related_name='logs')
-    traking_no = peewee.CharField(null=True)
+    package_tracking_no = peewee.CharField(null=True)
     tracking_msg = peewee.CharField(null=True)
     update_time = peewee.DateTimeField(null=False)
     update_time_int = peewee.IntegerField(null=False)
