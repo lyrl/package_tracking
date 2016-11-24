@@ -70,7 +70,7 @@ class PackageTrackingComponentImpl(PackageTrackingComponent):
         is_subscribed = PkgTrkUtil.is_subscribed(self, suber_account, suber_nike_name, group_name, group_no, sub_type, sub_source, tracking_no)
         if is_subscribed:
             msg = '您已经订阅了此快递动态，请勿重复订阅！'
-            self.send_msg(suber_account, suber_nike_name, group_name, group_no, sub_type, sub_source, msg)
+            self.send_async_msg(suber_account, suber_nike_name, group_name, group_no, sub_type, sub_source, msg)
             return
 
         # 保存新的订阅记录
@@ -116,7 +116,6 @@ class PackageTrackingComponentImpl(PackageTrackingComponent):
                 msg = '快递已订阅，将为您提供实时推送！'
         else:
             msg = '该单号暂无物流进展，有进展时会通过QQ群消息提醒!'
-
 
         self.send_async_msg(suber_account, suber_nike_name, group_name, group_no, sub_type, sub_source, msg)
 
@@ -213,7 +212,7 @@ class PackageTrackingComponentImpl(PackageTrackingComponent):
                             desc
                         )
 
-                        self.send_async_msg(package.suber_account, package.suber_nike_name, package.group_name, package.group_no, package. sub_type, package.sub_source, msg)
+                        self.send_async_msg(package.suber_account.encode('utf-8'), package.suber_nike_name.encode('utf-8'), package.group_name.encode('utf-8'), package.group_no.encode('utf-8'), package.sub_type.encode('utf-8'), package.sub_source.encode('utf-8'), msg)
                         break
             else:
                 logger.debug("[包裹追踪] - 包裹 %s 没有任何更新!" % str(package.tracking_no))
