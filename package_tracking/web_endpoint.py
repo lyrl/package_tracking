@@ -66,7 +66,7 @@ class QQ:
                         req_json['sender'].encode('utf-8'),
                         None,
                         None,
-                        'group',
+                        'friend',
                         'qq',
                         str(content).replace('快递', ''))
                 if re.match('^快递跟踪\w+$', content):
@@ -75,7 +75,7 @@ class QQ:
                         req_json['sender'].encode('utf-8'),
                         None,
                         None,
-                        'group',
+                        'friend',
                         'qq',
                         str(content).replace('快递跟踪', ''))
 
