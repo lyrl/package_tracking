@@ -111,7 +111,7 @@ class PackageTrackingComponentImpl(PackageTrackingComponent):
             PkgTrkUtil.update_package_status(package_tracking_record, trk_logs)
 
             # 更新快递公司名
-            PkgTrkUtil.update_company_name(package_tracking_record, trk_logs)
+            PkgTrkUtil.update_company_name(trk_logs, package_tracking_record)
 
             if package_tracking_record.package_status == model.STAUS_IN_DELIVERED:
                 msg = '当前快递是已签收状态，无法提供订阅服务！'
