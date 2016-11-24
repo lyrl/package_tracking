@@ -69,7 +69,7 @@ class PackageTrackingComponentImpl(PackageTrackingComponent):
         # 是否已经订阅
         is_subscribed = PkgTrkUtil.is_subscribed(self, suber_account, suber_nike_name, group_name, group_no, sub_type, sub_source, tracking_no)
         if is_subscribed:
-            msg = '\n\n您已经订阅了此快递动态，请勿重复订阅！'
+            msg = '\n您已经订阅了此快递动态，请勿重复订阅！'
             self.send_async_msg(suber_account, suber_nike_name, group_name, group_no, sub_type, sub_source, msg)
             return
 
@@ -111,11 +111,11 @@ class PackageTrackingComponentImpl(PackageTrackingComponent):
             msg += '\n\n'.join(PkgTrkUtil.extract_trk_rec(trk_logs, 2))
 
             if package_tracking_record.package_status == model.STAUS_IN_DELIVERED:
-                msg = '\n\n当前快递是已签收状态，无法提供订阅服务！'
+                msg = '\n当前快递是已签收状态，无法提供订阅服务！'
             else:
-                msg = '\n\n快递已订阅，将为您提供实时推送！'
+                msg = '\n快递已订阅，将为您提供实时推送！'
         else:
-            msg = '\n\n该单号暂无物流进展，有进展时会通过QQ群消息提醒!'
+            msg = '\n该单号暂无物流进展，有进展时会通过QQ群消息提醒!'
 
         self.send_async_msg(suber_account, suber_nike_name, group_name, group_no, sub_type, sub_source, msg)
 
