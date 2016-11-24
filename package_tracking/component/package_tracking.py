@@ -108,22 +108,18 @@ class PackageTrackingComponentImpl(PackageTrackingComponent):
             msg += '\n\n'.join(PkgTrkUtil.extract_trk_rec(trk_logs, 2))
 
             # 解析快递状态
-            package_tracking_record.package_status = PkgTrkUtil.parse_tracking_status(trk_logs)
+            PkgTrkUtil.update_package_status(package_tracking_record, trk_logs)
 
-            print 'package_tracking_record.package_status: ',  str(package_tracking_record.package_status)
+            # 更新快递公司名
+            PkgTrkUtil.update_company_name(package_tracking_record, trk_logs)
 
             if package_tracking_record.package_status == model.STAUS_IN_DELIVERED:
                 msg = '当前快递是已签收状态，无法提供订阅服务！'
             else:
                 msg = '快递已订阅，将为您提供实时推送！'
-
-            # 更新快递公司名
-            if kuai100_resp['data'].has_key('company'):
-                package_tracking_record.company_name = kuai100_resp['data']['company']['fullname']
-
-            package_tracking_record.save()
         else:
             msg = '该单号暂无物流进展，有进展时会通过QQ群消息提醒!'
+
 
         self.send_async_msg(suber_account, suber_nike_name, group_name, group_no, sub_type, sub_source, msg)
 
@@ -192,6 +188,7 @@ class PackageTrackingComponentImpl(PackageTrackingComponent):
             if PkgTrkUtil.check_kuai100_resp(kuaidi100_json):
                 # 更新快递公司名称
                 PkgTrkUtil.update_company_name(kuaidi100_json, package)
+
                 # 快递最后的更新时间，最新一条信息的时间
                 top_time = PkgTrkUtil.get_latest_update_time(package)
                 logger.debug('top_time' + str(top_time))
