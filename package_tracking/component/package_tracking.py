@@ -250,12 +250,12 @@ class PackageTrackingComponentImpl(PackageTrackingComponent):
 
         if sub_source == 'qq':
             if sub_type == 'friend':
-                self.mojo_qq.send_qq_msg(suber_account, msg[3:])
+                self.mojo_qq.send_qq_msg(suber_account, msg[1:])
             elif sub_type == 'group':
                 self.mojo_qq.send_group_msg(group_no, msg, suber_nike_name)
         elif sub_source == 'wx':
             if sub_type == 'friend':
-                self.mojo_wx.send_msg(suber_account, msg[3:])
+                self.mojo_wx.send_msg(suber_account, msg[1:])
             elif sub_type == 'group':
                 self.mojo_wx.send_group_msg(group_name, group_no, msg, suber_nike_name)
 
