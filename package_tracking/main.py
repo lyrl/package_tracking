@@ -14,7 +14,7 @@ from package_tracking.component.package_tracking import PackageTrackingComponent
 
 if __name__ == '__main__':
     while True:
-        package_tracking_impl = PackageTrackingComponentImpl(mojoqq_host='127.0.0.1')
+        package_tracking_impl = PackageTrackingComponentImpl(create_table=True, mojoqq_host='127.0.0.1')
         package_tracking_impl.update_subscribed_package()
 
         time.sleep(60)
