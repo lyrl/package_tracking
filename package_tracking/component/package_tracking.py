@@ -212,7 +212,7 @@ class PackageTrackingComponentImpl(PackageTrackingComponent):
                             desc
                         )
 
-                        self.send_async_msg(package.suber_account.encode('utf-8'), package.suber_nike_name.encode('utf-8'), package.group_name.encode('utf-8'), package.group_no.encode('utf-8'), package.sub_type.encode('utf-8'), package.sub_source.encode('utf-8'), msg)
+                        self.send_async_msg(str(package.suber_account), package.suber_nike_name.encode('utf-8'), package.group_name.encode('utf-8'), str(package.group_no), package.sub_type.encode('utf-8'), package.sub_source.encode('utf-8'), msg)
                         break
             else:
                 logger.debug("[包裹追踪] - 包裹 %s 没有任何更新!" % str(package.tracking_no))
