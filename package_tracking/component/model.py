@@ -22,7 +22,7 @@ class PackageTrackingRecord(BaseModel):
     # 订阅来源 微信、QQ   wx qq
     sub_source = peewee.CharField(null=False)
     # 群组名
-    group_name = peewee.CharField(null=False)
+    group_name = peewee.CharField(null=True)
     # 群组号码
     group_no = peewee.CharField(null=True)
     # 订阅者账号
