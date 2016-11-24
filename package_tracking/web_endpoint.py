@@ -122,7 +122,7 @@ class WX:
                     pkg_trk_comp.qry_pkg_trk_msg(
                         req_json['sender_account'].encode('utf-8'),
                         req_json['sender'].encode('utf-8'),
-                        req_json['group_id'].encode('utf-8'),
+                        None,
                         None,
                         'friend',
                         'wx',
@@ -131,7 +131,7 @@ class WX:
                     pkg_trk_comp.sub_pkg_trk_msg(
                         req_json['sender_account'].encode('utf-8'),
                         req_json['sender'].encode('utf-8'),
-                        req_json['group_id'].encode('utf-8'),
+                        None,
                         None,
                         'friend',
                         'wx',
