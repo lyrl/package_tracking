@@ -18,7 +18,7 @@ urls = (
   '/api/wx', 'WX',
 )
 
-pkg_trk_comp = PackageTrackingComponentImpl(create_table=False, mojoqq_host='127.0.0.1')
+pkg_trk_comp = PackageTrackingComponentImpl(create_table=True, mojoqq_host='127.0.0.1')
 # pkg_trk_comp = PackageTrackingComponentImpl(create_table=False, mojoqq_host='192.168.30.130')
 
 
