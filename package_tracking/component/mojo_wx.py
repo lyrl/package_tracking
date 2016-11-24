@@ -80,7 +80,7 @@ class MoJoWXComponentImpl(MoJoWXComponent):
         """
         service_path = '/openwx/send_group_message'
 
-        logger.debug("[MoJoWX] - 发送消息到 微信讨论组  %s 消息：%s 提到的人: %s " % (group_name, msg.encode('utf-8'), mention.encode('utf-8')))
+        logger.debug("[MoJoWX] - 发送消息到 微信讨论组  %s 消息：%s 提到的人: %s " % (group_name, msg, mention))
 
         encoded_data = urllib.urlencode({
             'id': group_id,

@@ -56,7 +56,7 @@ class MoJoQQComponentImpl(MoJoQQComponent):
             str: json
         """
         service_path = '/openqq/send_message'
-        logger.debug("[MoJoQQ] - 发送消息到 qq %s 消息：%s " % (str(qq_no), msg.encode('utf-8')))
+        logger.debug("[MoJoQQ] - 发送消息到 qq %s 消息：%s " % (qq_no, msg))
 
         encoded_data = urllib.urlencode({
             'qq': qq_no,
@@ -81,7 +81,7 @@ class MoJoQQComponentImpl(MoJoQQComponent):
         """
         service_path = '/openqq/send_group_message'
 
-        logger.debug("[MoJoQQ] - 发送消息到 qq群 %s 消息：%s 提到的人: %s " % (str(group_no), msg.encode('utf-8'), mention.encode('utf-8')))
+        logger.debug("[MoJoQQ] - 发送消息到 qq群 %s 消息：%s 提到的人: %s " % (group_no, msg, mention))
 
         encoded_data = urllib.urlencode({
             'gnumber': group_no,
@@ -107,7 +107,7 @@ class MoJoQQComponentImpl(MoJoQQComponent):
         """
         service_path = '/openqq/send_discuss_message'
 
-        logger.debug("[MoJoQQ] - 发送消息到 qq讨论组 %s 消息：%s 提到的人: %s".encode('utf-8') % (discuss_id, msg, mention))
+        logger.debug("[MoJoQQ] - 发送消息到 qq讨论组 %s 消息：%s 提到的人: %s" % (discuss_id, msg, mention))
 
         encoded_data = urllib.urlencode({
             'did': discuss_id,
