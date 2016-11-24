@@ -133,7 +133,7 @@ class PackageTrackingComponentImpl(PackageTrackingComponent):
         else:
             msg = '该单号暂无物流进展，有进展时会通过QQ群消息提醒!'
 
-        # self.send_async_group_msg(qq_group_no, msg, qq_nike_name)
+        self.send_msg(suber_account, suber_nike_name, group_name, group_no, sub_type, sub_source, tracking_no, True, msg)
 
     def qry_pkg_trk_msg(self, suber_account, suber_nike_name, group_name, group_no, sub_type, sub_source, tracking_no, brief=True):
         """
