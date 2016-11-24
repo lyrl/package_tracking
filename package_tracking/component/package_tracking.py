@@ -188,8 +188,7 @@ class PackageTrackingComponentImpl(PackageTrackingComponent):
         # else:
         #     self.send_async_group_msg(str(qq_group_no), msg, qq_nike_name)
 
-
-        PkgTrkUtil.send_msg(suber_account, suber_nike_name, group_name, group_no, sub_type, sub_source, tracking_no, brief, msg)
+        self.send_msg(suber_account, suber_nike_name, group_name, group_no, sub_type, sub_source, tracking_no, brief, msg)
 
     def update_subscribed_package(self):
         """
