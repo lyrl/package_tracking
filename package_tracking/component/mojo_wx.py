@@ -24,7 +24,7 @@ class MoJoWXComponent:
         pass
 
     @abstractmethod
-    def send_group_msg(self, group_name, msg, mention):
+    def send_group_msg(self,group_name, group_id, msg, mention):
         pass
 
 
@@ -40,7 +40,6 @@ class MoJoWXComponentImpl(MoJoWXComponent):
         self.mojo_host = mojo_host
         self.mojo_port = mojo_port
         self.mojo_url = 'http://%s:%s' % (self.mojo_host, self.mojo_port)
-
 
     def send_msg(self, account, msg):
         """
@@ -67,11 +66,12 @@ class MoJoWXComponentImpl(MoJoWXComponent):
         except Exception as e:
             logger.error("[MoJoWX] - 发送微信消息失败 %s " % e.message)
 
-    def send_group_msg(self, group_name, msg, mention):
+    def send_group_msg(self, group_name, group_id, msg, mention):
         """
         发送qq群组消息
 
         Args:
+            group_id (str): 微信群组ID
             group_name (str): 微信群组名
             msg (str): 消息
             mention (str): 需要提到的人
@@ -80,10 +80,10 @@ class MoJoWXComponentImpl(MoJoWXComponent):
         """
         service_path = '/openwx/send_group_message'
 
-        logger.debug("[MoJoWX] - 发送消息到 微信讨论组  %s 消息：%s 提到的人: %s " % (group_name, msg, mention))
+        logger.debug("[MoJoWX] - 发送消息到 微信讨论组  %s 消息：%s 提到的人: %s " % (group_namem, msg, mention))
 
         encoded_data = urllib.urlencode({
-            'displayname': group_name,
+            'id': group_id,
             'content': '@'+mention+' '+msg if mention else msg
         })
 

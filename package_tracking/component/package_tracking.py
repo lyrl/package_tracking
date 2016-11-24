@@ -270,7 +270,7 @@ class PackageTrackingComponentImpl(PackageTrackingComponent):
             if sub_type == 'friend':
                 self.mojo_wx.send_msg(suber_account, msg)
             elif sub_type == 'group':
-                self.mojo_wx.send_group_msg(group_name, msg, suber_nike_name)
+                self.mojo_wx.send_group_msg(group_no, msg, suber_nike_name)
 
 
 class PkgTrkUtil:
