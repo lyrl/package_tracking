@@ -38,7 +38,7 @@ class QQ:
 
                 if re.match('^快递\w+$', content):
                     pkg_trk_comp.qry_pkg_trk_msg(
-                        req_json['sender_qq'].encode('utf-8'),
+                        str(req_json['sender_qq']),
                         req_json['sender'].encode('utf-8'),
                         req_json['group'].encode('utf-8'),
                         req_json['group_id'].encode('utf-8'),
@@ -48,7 +48,7 @@ class QQ:
                     )
                 if re.match('^快递跟踪\w+$', content):
                     pkg_trk_comp.sub_pkg_trk_msg(
-                        req_json['sender_qq'].encode('utf-8'),
+                        str(req_json['sender_qq']),
                         req_json['sender'].encode('utf-8'),
                         req_json['group'].encode('utf-8'),
                         req_json['group_id'].encode('utf-8'),
@@ -62,7 +62,7 @@ class QQ:
 
                 if re.match('^快递\w+$', content):
                     pkg_trk_comp.qry_pkg_trk_msg(
-                        req_json['sender_qq'].encode('utf-8'),
+                        str(req_json['sender_qq']),
                         req_json['sender'].encode('utf-8'),
                         None,
                         None,
@@ -71,7 +71,7 @@ class QQ:
                         str(content).replace('快递', ''))
                 if re.match('^快递跟踪\w+$', content):
                     pkg_trk_comp.sub_pkg_trk_msg(
-                        req_json['sender_qq'].encode('utf-8'),
+                        str(req_json['sender_qq']),
                         req_json['sender'].encode('utf-8'),
                         None,
                         None,
