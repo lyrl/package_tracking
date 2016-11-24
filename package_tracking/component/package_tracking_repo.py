@@ -65,7 +65,6 @@ class PackageTrackingRepoComponentImpl(PackageTrackingRepoComponent):
         """
         pkg_track_info = model.PackageTrackingRecord()
 
-
         pkg_track_info.suber_account = suber_account
         pkg_track_info.suber_nike_name = suber_nike_name
         pkg_track_info.group_name = group_name
@@ -106,7 +105,7 @@ class PackageTrackingRepoComponentImpl(PackageTrackingRepoComponent):
         pkg_track_log = model.PackageTrackingDetail()
 
         pkg_track_log.package_tracking = package_tracking_obj
-        pkg_track_log.traking_no = tracking_no
+        pkg_track_log.package_tracking_no = tracking_no
         pkg_track_log.tracking_msg = tracking_msg
         pkg_track_log.update_time = update_time
         pkg_track_log.update_time_int = update_time_int
