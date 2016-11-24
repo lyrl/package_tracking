@@ -81,7 +81,7 @@ class PackageTrackingRepoComponentImpl(PackageTrackingRepoComponent):
         try:
             pkg_track_info.save()
         except Exception as e:
-            logger.error("[数据库访问] - 保存包裹订阅信息失败 %s qq:%s tracking_no:%s" % (e.message, str(qq_no), str(tracking_no)))
+            logger.error("[数据库访问] - 保存包裹订阅信息失败 %s account:%s tracking_no:%s" % (e.message, str(suber_account), str(tracking_no)))
             raise PackageTrackingRepoComponentException("[数据库访问] - 保存包裹订阅信息失败")
 
         logger.debug("[数据库访问] - 保存包裹订阅信息成功 id:%s" % pkg_track_info.id)
@@ -150,16 +150,28 @@ class PackageTrackingRepoComponentImpl(PackageTrackingRepoComponent):
         """
 
         if sub_type == 'group':
-            return model.PackageTrackingRecord.select().where(
-                (model.PackageTrackingRecord.suber_account == str(suber_account)) &
-                (model.PackageTrackingRecord.suber_nike_name == str(suber_nike_name)) &
-                (model.PackageTrackingRecord.group_name == str(group_name)) &
-                (model.PackageTrackingRecord.group_no == str(group_no)) &
-                (model.PackageTrackingRecord.sub_type == str(sub_type)) &
-                (model.PackageTrackingRecord.sub_source == str(sub_source)) &
-                (model.PackageTrackingRecord.tracking_no == str(tracking_no)) &
-                (model.PackageTrackingRecord.package_status != model.STAUS_IN_DELIVERED)
-            )
+
+            if sub_type == 'wx':
+                return model.PackageTrackingRecord.select().where(
+                    (model.PackageTrackingRecord.suber_nike_name == str(suber_nike_name)) &
+                    (model.PackageTrackingRecord.group_name == str(group_name)) &
+                    (model.PackageTrackingRecord.group_no == str(group_no)) &
+                    (model.PackageTrackingRecord.sub_type == str(sub_type)) &
+                    (model.PackageTrackingRecord.sub_source == str(sub_source)) &
+                    (model.PackageTrackingRecord.tracking_no == str(tracking_no)) &
+                    (model.PackageTrackingRecord.package_status != model.STAUS_IN_DELIVERED)
+                )
+            else:
+                return model.PackageTrackingRecord.select().where(
+                    (model.PackageTrackingRecord.suber_account == str(suber_account)) &
+                    (model.PackageTrackingRecord.suber_nike_name == str(suber_nike_name)) &
+                    (model.PackageTrackingRecord.group_name == str(group_name)) &
+                    (model.PackageTrackingRecord.group_no == str(group_no)) &
+                    (model.PackageTrackingRecord.sub_type == str(sub_type)) &
+                    (model.PackageTrackingRecord.sub_source == str(sub_source)) &
+                    (model.PackageTrackingRecord.tracking_no == str(tracking_no)) &
+                    (model.PackageTrackingRecord.package_status != model.STAUS_IN_DELIVERED)
+                )
         else:
             return model.PackageTrackingRecord.select().where(
                 (model.PackageTrackingRecord.suber_account == str(suber_account)) &

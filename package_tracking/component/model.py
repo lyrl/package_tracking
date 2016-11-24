@@ -26,7 +26,7 @@ class PackageTrackingRecord(BaseModel):
     # 群组号码
     group_no = peewee.CharField(null=True)
     # 订阅者账号
-    suber_account = peewee.CharField(null=False)
+    suber_account = peewee.CharField(null=True)
     # 订阅者昵称
     suber_nike_name = peewee.CharField(null=False)
     # 包裹号码
